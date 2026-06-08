@@ -12,32 +12,56 @@
 
 ## 安装
 
-### Claude Code / Windsurf / OpenCode 等（原生支持 Agent Skills）
-
-将 skill 目录复制到 agent 的 skills 目录即可自动发现：
+### 一键安装（推荐）
 
 ```bash
-# Claude Code
-cp -r code-audit code-fix feature-flow .claude/skills/
+# Linux / macOS
+curl -fsSL https://raw.githubusercontent.com/klaxonz/workflow-skills/main/scripts/install.sh | bash
 
-# Windsurf  
-cp -r code-audit code-fix feature-flow .windsurf/skills/
-
-# 全局安装（所有项目可用）
-cp -r code-audit code-fix feature-flow ~/.claude/skills/
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/klaxonz/workflow-skills/main/scripts/install.ps1 | iex
 ```
 
-### Cursor
+### npx 安装
 
-从对应 `SKILL.md` 中提取内容，创建 `.cursor/rules/*.mdc` 文件。
+```bash
+# 克隆仓库后使用 CLI 安装
+git clone https://github.com/klaxonz/workflow-skills.git
+cd workflow-skills
 
-### GitHub Copilot
+# 安装到当前项目 (Claude Code)
+npx skills install claude
 
-从对应 `SKILL.md` 中提取内容，写入 `.github/copilot-instructions.md`。
+# 安装到全局 (~/.claude/skills)
+npx skills install global
 
-### 其他 Agent
+# 安装到 OpenCode
+npx skills install opencode
 
-从 `SKILL.md` 中提取内容，按 agent 的要求放入对应位置。
+# 安装特定技能
+npx skills install claude code-audit
+```
+
+### npx 命令
+
+| 命令 | 说明 |
+|------|------|
+| `npx skills install <target>` | 安装技能 (默认 claude) |
+| `npx skills list <target>` | 列出已安装技能 |
+| `npx skills update` | 更新到最新版本 |
+| `npx skills uninstall <target>` | 卸载技能 |
+
+target 可选值: `claude`、`opencode`、`windsurf`、`global`、`claude:global`、自定义目录
+
+### 手动安装
+
+```bash
+cp -r code-audit code-fix feature-flow .claude/skills/
+```
+
+### 其他 Agent (Cursor / Copilot)
+
+从对应 `SKILL.md` 中提取内容，写入 agent 要求的规则文件位置。
 
 ## 项目产物结构
 

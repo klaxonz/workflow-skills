@@ -1,0 +1,39 @@
+{
+  "name": "@klaxonz/workflow-skills",
+  "version": "1.0.0",
+  "description": "Project development workflow skills — code audit, fix, and feature flow for AI coding agents",
+  "license": "MIT",
+  "author": "klaxonz",
+  "keywords": [
+    "agent-skills",
+    "code-review",
+    "code-audit",
+    "workflow",
+    "ai-coding",
+    "claude-code",
+    "opencode",
+    "windsurf"
+  ],
+  "files": [
+    "bin/",
+    "code-audit/",
+    "code-fix/",
+    "feature-flow/",
+    "scripts/",
+    "README.md"
+  ],
+  "bin": {
+    "skills": "./bin/skills.js"
+  },
+  "scripts": {
+    "pack": "npm pack --dry-run",
+    "prepublishOnly": "node scripts/validate.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/klaxonz/workflow-skills"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
