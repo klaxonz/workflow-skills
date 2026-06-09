@@ -128,6 +128,15 @@ fixed_by:
 3. 用户说"修 issue-001"时，Agent 切换到 `code-fix` 技能
 4. `code-fix` 读取对应的 issue 文件，继续修复流程
 
+### user → fix
+
+当用户直接报告缺陷但未指定 issue：
+1. 用户只需要提供观察到的现象，不需要先给出原因、代码位置或问题分类
+2. Agent 根据现象按 `_shared/templates/issue.md` 创建 issue，`source: manual`
+3. `title`、初始 `severity`、初始 `category`、`locations` 由 Agent 根据现象和初步调研填写；定位不明确时 `locations` 可先写 `project-wide`
+4. Agent 继续 `code-fix` 流程，通过代码调研、日志/测试/复现来补全根因、影响范围、准确位置和修复方案
+5. 只有缺少复现所需的关键输入（如用户账号、具体文件、无法推断的操作步骤）时，才向用户提最少必要问题
+
 ### feature-flow 发现 bug
 
 当 `feature-flow` 在开发过程中发现预存在的 bug：

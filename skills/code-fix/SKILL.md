@@ -13,23 +13,27 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 
 ### Step 0: 前置检查
 
-1. **检查工作区状态**
-   - 运行 `git status` / `git diff`，确认不覆盖他人未提交改动
-   - 未提交改动不涉及本 issue 的 `locations` 或计划修改文件时，记录后继续
-   - 未提交改动涉及同一文件或会影响修复判断时，先向用户确认
+1. **定位或创建 issue**
+   - 用户指定 issue 编号时，在 `{WORKFLOW_DIR}/issues/` 目录下查找指定 issue
+   - 用户未指定 issue 但描述了缺陷现象时，按 `_shared/templates/issue.md` 创建 `source: manual` 的 issue，再继续本流程
+   - 创建 manual issue 前重新扫描 `{WORKFLOW_DIR}/issues/`，如编号已存在，递增到下一个可用编号
+   - 用户只需要提供观察到的现象；原因、代码位置、分类和影响范围由 Agent 调研后补全
+   - 初始 `severity`、`category`、`locations` 由 Agent 根据现象和初步调研填写；定位不明确时 `locations` 可先写 `project-wide`
+   - 如 issue 编号不明确且用户没有描述新缺陷，列出可选 issue 供用户选择
 
-2. **定位 issue 文件**
-   - 在 `{WORKFLOW_DIR}/issues/` 目录下查找指定 issue
-   - 如 issue 编号不明确，列出可选 issue 供用户选择
-
-3. **读取并验证 issue**
+2. **读取并验证 issue**
    - 读取 issue 文件，理解问题描述、影响、建议方向
    - 验证 issue frontmatter 包含必要字段：`title`、`status`、`severity`、`category`、`locations`、`source`
    - 格式不符时，按 `_shared/templates/issue.md` 补全缺失字段
 
-4. **确认范围**
+3. **确认范围**
    - 涉及哪些文件（从 `locations` 字段和问题描述中提取）
    - 是否触及红线（对照项目红线规则）
+
+4. **检查工作区状态**
+   - 运行 `git status` / `git diff`，确认不覆盖他人未提交改动
+   - 未提交改动不涉及本 issue 的 `locations` 或计划修改文件时，记录后继续
+   - 未提交改动涉及同一文件或会影响修复判断时，先向用户确认
 
 5. **标记状态**
    - issue frontmatter 中 `status` 改为 `in_progress`
@@ -42,6 +46,7 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
    - 读取问题相关的源代码
    - 理解问题所在函数/模块的职责
    - 找出上下游调用者
+   - 对 `source: manual` 的 issue，从用户现象出发定位根因、准确 `locations`、真实影响和可复现路径；必要时回填 issue 的“现象与复现信息”
 
 2. **检查测试情况**
    - 是否有覆盖该代码的测试
