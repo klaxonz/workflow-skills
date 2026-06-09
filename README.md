@@ -21,6 +21,7 @@ skills/
     templates/
       issue.md              统一的问题报告模板
       requirements.md       需求文档模板
+      design.md             设计文档模板
   code-audit/
     SKILL.md
   code-fix/

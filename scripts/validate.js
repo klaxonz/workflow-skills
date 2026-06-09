@@ -45,7 +45,8 @@ function validateShared() {
   const required = [
     { path: path.join(sharedDir, 'conventions.md'), name: 'conventions.md' },
     { path: path.join(sharedDir, 'templates', 'requirements.md'), name: 'templates/requirements.md' },
-    { path: path.join(sharedDir, 'templates', 'issue.md'), name: 'templates/issue.md' }
+    { path: path.join(sharedDir, 'templates', 'issue.md'), name: 'templates/issue.md' },
+    { path: path.join(sharedDir, 'templates', 'design.md'), name: 'templates/design.md' }
   ];
 
   let passed = 0;

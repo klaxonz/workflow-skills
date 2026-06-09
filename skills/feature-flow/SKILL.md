@@ -22,6 +22,7 @@ description: Full feature lifecycle from requirements to merged code — require
 - `<name>` 用英文短横线命名（kebab-case）
 - 此 name 将作为后续文档的关联标识
 - 验收标准必须可验证（能判断是否完成）
+- 已有需求文档以 frontmatter `name` 为准；缺少 `name` 时，从文件名 `req-<name>.md` 解析并补齐
 
 ---
 
@@ -50,7 +51,19 @@ description: Full feature lifecycle from requirements to merged code — require
    - 是否有类似功能可复用
    - 测试覆盖情况
 
-2. **输出方案到 `{WORKFLOW_DIR}/designs/des-<name>.md`**
+2. **按 `_shared/templates/design.md` 输出方案到 `{WORKFLOW_DIR}/designs/des-feature-<name>.md`**
+
+设计文档 frontmatter：
+
+```yaml
+---
+type: feature
+name: <name>
+status: proposed
+related_requirement: requirements/req-<name>.md
+related_issue:
+---
+```
 
 **方案必须包含：**
 
@@ -61,6 +74,7 @@ description: Full feature lifecycle from requirements to merged code — require
 | **复用检查** | 是否有现有代码可复用，避免重复实现 |
 | **风险点** | 可能影响现有功能的改动、需要同步修改的测试 |
 | **实现顺序** | 建议的文件修改顺序（考虑依赖关系） |
+| **验证结果** | 收尾时填写 lint/type-check/unit-test/manual 的最终结果 |
 
 **示例：**
 
@@ -188,6 +202,8 @@ description: Full feature lifecycle from requirements to merged code — require
 验收标准: [1/3] [2/3] [3/3] (通过/总数)
 ```
 
+验证结果必须写回功能设计文档的 `## 验证结果`。
+
 ---
 
 ### Step 6: 报告 + 收尾
@@ -223,8 +239,9 @@ description: Full feature lifecycle from requirements to merged code — require
 4. **处理发现的 bug**
 
 如开发过程中发现了预存在 bug：
-- 创建 issue 文件：`issue-<NNN>-<title>.md`
-- issue 中 `source: feature-flow`
+- 按 `_shared/templates/issue.md` 创建 issue 文件：`issue-<NNN>-<title>.md`
+- 必须填写 `severity`、`category`、`locations`、`source: feature-flow`
+- 创建前重新扫描 `{WORKFLOW_DIR}/issues/`，如编号已存在，递增到下一个可用编号
 - 在报告中列出发现的 bug
 - 建议用户后续用 `code-fix` 处理
 - **不在当前功能流程中修复 bug**（除非用户明确要求）
@@ -242,7 +259,8 @@ description: Full feature lifecycle from requirements to merged code — require
 | 文档类型 | 命名规则 | 示例 |
 |---------|---------|------|
 | 需求 | `{WORKFLOW_DIR}/requirements/req-<name>.md` | `req-video-quality.md` |
-| 设计 | `{WORKFLOW_DIR}/designs/des-<name>.md` | `des-video-quality.md` |
+| 功能设计 | `{WORKFLOW_DIR}/designs/des-feature-<name>.md` | `des-feature-video-quality.md` |
+| 修复设计 | `{WORKFLOW_DIR}/designs/des-fix-<issue-id>-<title>.md` | `des-fix-issue-001-player-crash.md` |
 | Issue | `{WORKFLOW_DIR}/issues/issue-<NNN>-<title>.md` | `issue-001-player-crash.md` |
 
 ---

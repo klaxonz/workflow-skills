@@ -25,12 +25,13 @@ description: Cross-skill conventions — not a skill itself; referenced by other
 ```yaml
 ---
 title: <问题简述>
-status: open | in_progress | fixed | wontfix
+status: open | in_progress | fixed | wontfix | duplicate | blocked
 severity: critical | high | medium | low
-category: architecture | security | compliance | error-handling | dead-code | test-quality | naming
-location: <文件路径:行号>
-source: audit | feature-flow | manual
-fixed_by: <!-- 修复后填写设计文档路径 -->
+category: architecture | security | compliance | error-handling | dead-code | test-quality | naming | reliability | maintainability | performance
+locations:
+  - <文件路径:行号>
+source: audit | feature-flow | code-fix | manual
+fixed_by:
 ---
 ```
 
@@ -42,9 +43,22 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 | `status` | ✅ | 问题状态，默认 `open` |
 | `severity` | ✅ | 严重程度 |
 | `category` | ✅ | 问题类别 |
-| `location` | ✅ | 问题所在文件和行号 |
+| `locations` | ✅ | 问题所在文件和行号列表，至少一项 |
 | `source` | ✅ | 问题来源 |
 | `fixed_by` | ❌ | 修复后填写设计文档路径 |
+
+### 状态定义
+
+| 状态 | 说明 |
+|------|------|
+| `open` | 已确认，待处理 |
+| `in_progress` | 正在修复 |
+| `fixed` | 已修复并验证 |
+| `wontfix` | 确认不修复 |
+| `duplicate` | 与已有 issue 重复 |
+| `blocked` | 已尝试但被外部条件或信息缺口阻塞 |
+
+`fixed_by` 只指向最终成功的修复设计文档；失败、阻塞或多次尝试记录在 issue 正文的 `## 修复尝试` 中。
 
 ### 类别定义
 
@@ -57,6 +71,9 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 | `dead-code` | 废弃代码：未使用的 import、注释掉的代码块 |
 | `test-quality` | 测试质量：缺少断言、mock 过度、只测 happy path |
 | `naming` | 命名问题：变量名过于泛化、函数名不表达意图 |
+| `reliability` | 可靠性问题：竞态、状态不一致、边界条件导致故障 |
+| `maintainability` | 可维护性问题：复杂度过高、重复逻辑、难以演进 |
+| `performance` | 性能问题：不必要的重复计算、低效查询、资源占用过高 |
 
 ---
 
@@ -65,15 +82,22 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 | 文档类型 | 命名规则 | 示例 |
 |---------|---------|------|
 | 需求 | `req-<name>.md` | `req-video-quality.md` |
-| 设计 | `des-<name>.md` | `des-video-quality.md` |
+| 功能设计 | `des-feature-<name>.md` | `des-feature-video-quality.md` |
+| 修复设计 | `des-fix-<issue-id>-<title>.md` | `des-fix-issue-001-empty-catch.md` |
 | Issue | `issue-<NNN>-<title>.md` | `issue-001-empty-catch.md` |
 
 命名规则：
 - `<name>`: 功能名称，英文短横线命名（kebab-case）
+- `<issue-id>`: Issue 编号，如 `issue-001`
 - `<NNN>`: 三位数字编号，从 001 开始，全局递增
 - `<title>`: 问题简述的 slug 形式
 
-> Issue 编号全局递增，不区分来源。来源通过 frontmatter 的 `source` 字段标识。
+补充规则：
+- Issue 编号全局递增，不区分来源。来源通过 frontmatter 的 `source` 字段标识。
+- 创建 issue 前必须重新扫描 `{WORKFLOW_DIR}/issues/`，如目标编号已存在，递增到下一个可用编号。
+- 需求和功能设计文档以 frontmatter `name` 为关联标识；缺少 `name` 时，从文件名 `req-<name>.md` 或 `des-feature-<name>.md` 解析并补齐。
+- 修复设计文档以 issue 文件名中的 `issue-<NNN>` 为关联标识，并由 issue frontmatter 的 `fixed_by` 反向指向。
+- 设计文档必须按 `_shared/templates/design.md` 创建；功能设计使用 `type: feature`，修复设计使用 `type: fix`。
 
 ---
 
@@ -87,6 +111,10 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 | **不改未涉及模块** | 不顺手重构或格式化与当前任务无关的代码 |
 | **不提交代码** | 除非用户明确要求，否则不执行 git commit/push |
 | **保持最小变更** | 只改解决问题需要的行，避免整文件重写 |
+
+工作流目录规则：
+- 缺少 `{WORKFLOW_DIR}/issues/`、`{WORKFLOW_DIR}/designs/`、`{WORKFLOW_DIR}/requirements/` 时，按需创建。
+- `locations` 可写具体行号（如 `src/foo.ts:42`）、文件路径（如 `src/foo.ts`）或 `project-wide`。
 
 ---
 
@@ -103,7 +131,7 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 ### feature-flow 发现 bug
 
 当 `feature-flow` 在开发过程中发现预存在的 bug：
-1. 创建 issue 文件，`source: feature-flow`
+1. 按 `_shared/templates/issue.md` 创建 issue 文件，必须填写 `severity`、`category`、`locations`、`source: feature-flow`
 2. 在收尾报告中列出发现的 bug
 3. 建议用户后续用 `code-fix` 处理
 4. **不在当前功能流程中修复 bug**（除非用户明确要求）
@@ -111,7 +139,7 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 ### fix 发现新问题
 
 当 `code-fix` 在修复过程中发现相关问题但超出当前范围：
-1. 创建新 issue 文件
+1. 按 `_shared/templates/issue.md` 创建新 issue 文件，必须填写 `severity`、`category`、`locations`、`source: code-fix`
 2. 继续当前修复，不中断
 3. 修复完成后向用户报告新 issue，建议后续处理
 

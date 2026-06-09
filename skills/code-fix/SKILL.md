@@ -15,7 +15,8 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 
 1. **检查工作区状态**
    - 运行 `git status` / `git diff`，确认不覆盖他人未提交改动
-   - 如有未提交改动，询问用户是否继续
+   - 未提交改动不涉及本 issue 的 `locations` 或计划修改文件时，记录后继续
+   - 未提交改动涉及同一文件或会影响修复判断时，先向用户确认
 
 2. **定位 issue 文件**
    - 在 `{WORKFLOW_DIR}/issues/` 目录下查找指定 issue
@@ -23,11 +24,11 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 
 3. **读取并验证 issue**
    - 读取 issue 文件，理解问题描述、影响、建议方向
-   - 验证 issue frontmatter 包含必要字段：`title`、`status`、`severity`、`category`、`location`
+   - 验证 issue frontmatter 包含必要字段：`title`、`status`、`severity`、`category`、`locations`、`source`
    - 格式不符时，按 `_shared/templates/issue.md` 补全缺失字段
 
 4. **确认范围**
-   - 涉及哪些文件（从 `location` 字段和问题描述中提取）
+   - 涉及哪些文件（从 `locations` 字段和问题描述中提取）
    - 是否触及红线（对照项目红线规则）
 
 5. **标记状态**
@@ -54,7 +55,19 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 
 ### Step 2: 设计方案
 
-输出简短方案到 `{WORKFLOW_DIR}/designs/des-<issue-name>.md`。
+按 `_shared/templates/design.md` 输出简短方案到 `{WORKFLOW_DIR}/designs/des-fix-<issue-id>-<title>.md`。
+
+设计文档 frontmatter：
+
+```yaml
+---
+type: fix
+name: <issue-id>
+status: proposed
+related_requirement:
+related_issue: issues/<issue-file>.md
+---
+```
 
 **方案必须包含：**
 
@@ -65,6 +78,7 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 | **涉及文件** | 列出需要修改的文件及每个文件的改动概要 |
 | **潜在风险** | 修复可能影响的上下游、是否需要同步修改测试 |
 | **同类问题** | 是否有相同模式的其他位置需要一并修复 |
+| **验证结果** | 收尾时填写 lint/type-check/test/manual 的最终结果 |
 
 **示例：**
 
@@ -96,7 +110,9 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 - `src/utils/loader.ts:78` 有相同的空 catch 块，建议一并修复
 ```
 
-**用户确认后** 进入编码。
+**进入编码规则：**
+- 涉及跨模块改动、公共接口变更、数据迁移、权限/安全逻辑或行为兼容性变化时，必须等待用户确认
+- 低风险局部修复（如死代码、命名、空 catch、缺少日志、测试断言补充）可直接实施，并在方案文档中记录判断依据
 
 ---
 
@@ -118,6 +134,7 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 5. **方案调整**
    - 如发现修复方案需要调整，回到 Step 2 更新方案后再继续
    - 重大调整需再次向用户确认
+   - 如确认无法继续修复，将 issue `status` 改为 `blocked`，并在 issue 的 `## 修复尝试` 中记录阻塞原因和已验证事实
 
 ---
 
@@ -159,13 +176,16 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 验证: lint [Y/N/SKIP]  type-check [Y/N/SKIP]  test [Y/N/SKIP]  manual [Y/N]
 ```
 
+验证结果必须写回修复设计文档的 `## 验证结果`。验证失败时，不关闭 issue；在 issue 的 `## 修复尝试` 中记录失败命令、失败原因和下一步建议。
+
 ---
 
 ### Step 6: 关闭 issue + 报告结果
 
 1. **更新 issue 状态**
    - issue frontmatter `status` 改为 `fixed`
-   - 填写 `fixed_by: designs/des-<issue-name>.md`
+   - 填写 `fixed_by: designs/des-fix-<issue-id>-<title>.md`
+   - 修复设计文档 frontmatter `status` 改为 `implemented`
 
 2. **输出简短报告**
 
@@ -179,7 +199,7 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 ```
 
 3. **后续操作**
-   - 如修复过程中创建了新 issue，向用户报告并建议后续处理
+   - 如修复过程中创建了新 issue，按 `_shared/templates/issue.md` 填写 `severity`、`category`、`locations`、`source: code-fix`，向用户报告并建议后续处理
    - 如用户要求，可继续修复下一个 issue
 
 ---

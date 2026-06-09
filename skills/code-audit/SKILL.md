@@ -90,7 +90,7 @@ description: Analyze code for design and quality issues — code smells, archite
 
 ### Step 3: 去重
 
-创建 issue 前检查 `{WORKFLOW_DIR}/issues/` 目录下已有的 open 状态 issue：
+创建 issue 前检查 `{WORKFLOW_DIR}/issues/` 目录下已有的未关闭 issue（`open`、`in_progress`、`blocked`）：
 
 - 相同问题不重复创建
 - 同类问题合并到一个 issue（如多个文件有相同的空 catch 块）
@@ -107,6 +107,8 @@ description: Analyze code for design and quality issues — code smells, archite
 - `<NNN>`: 三位数字编号，全局递增（检查已有 issue 确定起始编号）
 - `<title>`: 问题简述的英文 slug 形式
 
+创建文件前重新扫描 `{WORKFLOW_DIR}/issues/`。如编号已存在，递增到下一个可用编号。
+
 **格式：** 参照 `_shared/templates/issue.md`，其中 `source: audit`。
 
 **示例：**
@@ -117,8 +119,10 @@ title: 空 catch 块吞没异常
 status: open
 severity: medium
 category: error-handling
-location: src/utils/parser.ts:42
+locations:
+  - src/utils/parser.ts:42
 source: audit
+fixed_by:
 ---
 
 ## 问题描述
@@ -140,6 +144,8 @@ try {
 1. 至少记录错误日志
 2. 考虑是否应向上传播或使用默认值并 warn
 3. 检查其他文件是否有相同问题，一并修复
+
+## 修复尝试
 ```
 
 ---
