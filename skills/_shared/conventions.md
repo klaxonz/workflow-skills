@@ -64,17 +64,16 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 
 | 文档类型 | 命名规则 | 示例 |
 |---------|---------|------|
-| 需求 | `<name>.md` | `video-quality-selector.md` |
-| 设计 | `<name>.md` | `video-quality-selector.md` |
-| 审计 Issue | `audit-<NNN>-<title>.md` | `audit-001-empty-catch.md` |
-| 功能 Issue | `feat-<name>-<NNN>-<title>.md` | `feat-video-quality-001-player-crash.md` |
-| 独立缺陷 | `bug-<date>-<NNN>-<title>.md` | `bug-2026-06-07-001-login-failure.md` |
+| 需求 | `req-<name>.md` | `req-video-quality.md` |
+| 设计 | `des-<name>.md` | `des-video-quality.md` |
+| Issue | `issue-<NNN>-<title>.md` | `issue-001-empty-catch.md` |
 
 命名规则：
 - `<name>`: 功能名称，英文短横线命名（kebab-case）
-- `<NNN>`: 三位数字编号，从 001 开始
+- `<NNN>`: 三位数字编号，从 001 开始，全局递增
 - `<title>`: 问题简述的 slug 形式
-- `<date>`: 日期格式 YYYY-MM-DD
+
+> Issue 编号全局递增，不区分来源。来源通过 frontmatter 的 `source` 字段标识。
 
 ---
 
@@ -96,9 +95,9 @@ fixed_by: <!-- 修复后填写设计文档路径 -->
 ### audit → fix
 
 当 `code-audit` 完成后：
-1. 汇总列出所有 issue 编号（如 `audit-001`、`audit-002`）
+1. 汇总列出所有 issue 编号（如 `issue-001`、`issue-002`）
 2. 向用户建议："如需修复，使用 `code-fix` 技能，指定 issue 编号"
-3. 用户说"修 audit-001"时，Agent 切换到 `code-fix` 技能
+3. 用户说"修 issue-001"时，Agent 切换到 `code-fix` 技能
 4. `code-fix` 读取对应的 issue 文件，继续修复流程
 
 ### feature-flow 发现 bug

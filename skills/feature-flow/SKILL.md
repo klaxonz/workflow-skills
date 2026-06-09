@@ -50,7 +50,7 @@ description: Full feature lifecycle from requirements to merged code — require
    - 是否有类似功能可复用
    - 测试覆盖情况
 
-2. **输出方案到 `{WORKFLOW_DIR}/designs/<name>.md`**（与需求同名）
+2. **输出方案到 `{WORKFLOW_DIR}/designs/des-<name>.md`**
 
 **方案必须包含：**
 
@@ -223,7 +223,7 @@ description: Full feature lifecycle from requirements to merged code — require
 4. **处理发现的 bug**
 
 如开发过程中发现了预存在 bug：
-- 创建 issue 文件：`bug-<date>-<NNN>-<title>.md`
+- 创建 issue 文件：`issue-<NNN>-<title>.md`
 - issue 中 `source: feature-flow`
 - 在报告中列出发现的 bug
 - 建议用户后续用 `code-fix` 处理
@@ -241,10 +241,9 @@ description: Full feature lifecycle from requirements to merged code — require
 
 | 文档类型 | 命名规则 | 示例 |
 |---------|---------|------|
-| 需求 | `{WORKFLOW_DIR}/requirements/<name>.md` | `video-quality-selector.md` |
-| 设计 | `{WORKFLOW_DIR}/designs/<name>.md` | `video-quality-selector.md` |
-| 功能 Issue | `{WORKFLOW_DIR}/issues/feat-<name>-<NNN>-<title>.md` | `feat-video-quality-001-player-crash.md` |
-| 独立缺陷 | `{WORKFLOW_DIR}/issues/bug-<date>-<NNN>-<title>.md` | `bug-2026-06-07-001-login-failure.md` |
+| 需求 | `{WORKFLOW_DIR}/requirements/req-<name>.md` | `req-video-quality.md` |
+| 设计 | `{WORKFLOW_DIR}/designs/des-<name>.md` | `des-video-quality.md` |
+| Issue | `{WORKFLOW_DIR}/issues/issue-<NNN>-<title>.md` | `issue-001-player-crash.md` |
 
 ---
 

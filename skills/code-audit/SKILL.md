@@ -102,10 +102,10 @@ description: Analyze code for design and quality issues — code smells, archite
 
 每个问题一个文件，路径 `{WORKFLOW_DIR}/issues/`。
 
-**文件命名：** `audit-<NNN>-<title-slug>.md`
+**文件命名：** `issue-<NNN>-<title>.md`
 
-- `<NNN>`: 三位数字编号，从 001 开始递增
-- `<title-slug>`: 问题简述的英文 slug 形式
+- `<NNN>`: 三位数字编号，全局递增（检查已有 issue 确定起始编号）
+- `<title>`: 问题简述的英文 slug 形式
 
 **格式：** 参照 `_shared/templates/issue.md`，其中 `source: audit`。
 
@@ -159,13 +159,13 @@ try {
 
 | 编号 | 问题 | 严重度 | 修复思路 |
 |------|------|--------|----------|
-| audit-001 | 硬编码 API Key | critical | 移至环境变量 |
-| audit-002 | 空 catch 块 | medium | 添加错误日志 |
-| audit-003 | 循环依赖 | high | 重构模块拆分 |
+| issue-001 | 硬编码 API Key | critical | 移至环境变量 |
+| issue-002 | 空 catch 块 | medium | 添加错误日志 |
+| issue-003 | 循环依赖 | high | 重构模块拆分 |
 
 ### 后续操作
 
-- 如需修复，使用 `code-fix` 技能，指定 issue 编号（如 "修 audit-001"）
+- 如需修复，使用 `code-fix` 技能，指定 issue 编号（如 "修 issue-001"）
 - 如需更深入分析某问题，可指定单个 issue 再次运行 deep 审计
 ```
 

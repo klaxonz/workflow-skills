@@ -54,7 +54,7 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 
 ### Step 2: 设计方案
 
-输出简短方案到 `{WORKFLOW_DIR}/designs/<issue-name>.md`。
+输出简短方案到 `{WORKFLOW_DIR}/designs/des-<issue-name>.md`。
 
 **方案必须包含：**
 
@@ -69,7 +69,7 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 **示例：**
 
 ```markdown
-# 修复方案：audit-001 空 catch 块
+# 修复方案：issue-001 空 catch 块
 
 ## 根因
 
@@ -165,7 +165,7 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 
 1. **更新 issue 状态**
    - issue frontmatter `status` 改为 `fixed`
-   - 填写 `fixed_by: designs/<issue-name>.md`
+   - 填写 `fixed_by: designs/des-<issue-name>.md`
 
 2. **输出简短报告**
 
