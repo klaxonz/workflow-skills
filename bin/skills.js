@@ -6,6 +6,7 @@ const os = require('os');
 
 const SKILLS_DIR = path.resolve(__dirname, '..', 'skills');
 const SHARED_DIR_NAME = '_shared';
+const INSTALL_MARKER = '.workflow-skills-installed';
 
 const AGENT_DIRS = {
   codex: ['.agents/skills', path.join(os.homedir(), '.agents/skills')],
@@ -25,6 +26,10 @@ function discoverSkills() {
     .filter(d => d.isDirectory() && !d.name.startsWith('_'))
     .filter(d => fs.existsSync(path.join(SKILLS_DIR, d.name, 'SKILL.md')))
     .map(d => d.name);
+}
+
+function unique(items) {
+  return [...new Set(items)];
 }
 
 /**
@@ -47,28 +52,63 @@ function resolveTarget(target) {
 }
 
 /**
- * 查找已存在的符号链接
+ * 检查目标是否为指向当前源目录的符号链接
  */
-function findExistingLink(src, targetDir) {
-  if (!fs.existsSync(targetDir)) return null;
-  const name = path.basename(src);
-  const targetPath = path.join(targetDir, name);
+function isCurrentSymlink(src, dest) {
   try {
-    const stat = fs.lstatSync(targetPath);
+    const stat = fs.lstatSync(dest);
     if (stat.isSymbolicLink()) {
-      return targetPath;
+      return fs.realpathSync(dest) === fs.realpathSync(src);
     }
   } catch (e) { /* not found */ }
-  return null;
+  return false;
+}
+
+function isManagedCopy(dest) {
+  return fs.existsSync(path.join(dest, INSTALL_MARKER));
+}
+
+function canReplace(src, dest) {
+  if (!fs.existsSync(dest)) return true;
+  if (isCurrentSymlink(src, dest)) return true;
+  return isManagedCopy(dest);
+}
+
+function writeInstallMarker(dest, src) {
+  fs.writeFileSync(
+    path.join(dest, INSTALL_MARKER),
+    `source=${path.basename(src)}\nmanaged-by=@klaxonz/workflow-skills\n`
+  );
+}
+
+function createSummary() {
+  return { installed: 0, updated: 0, skipped: 0, removed: 0 };
+}
+
+function formatSummary(summary, noun) {
+  const parts = [];
+  if (summary.installed) parts.push(`${summary.installed} installed`);
+  if (summary.updated) parts.push(`${summary.updated} updated`);
+  if (summary.removed) parts.push(`${summary.removed} removed`);
+  if (summary.skipped) parts.push(`${summary.skipped} skipped`);
+  return parts.length ? `${noun}: ${parts.join(', ')}` : `${noun}: no changes`;
+}
+
+function hasManagedSkill(targetDir) {
+  return discoverSkills().some(name => {
+    const src = path.join(SKILLS_DIR, name);
+    const dest = path.join(targetDir, name);
+    return fs.existsSync(path.join(dest, 'SKILL.md')) && canReplace(src, dest);
+  });
 }
 
 /**
  * 安装技能和共享资源
  */
 function install(targets, skills) {
-  skills = skills || discoverSkills();
+  skills = unique(skills || discoverSkills());
   const sharedSrc = path.join(SKILLS_DIR, SHARED_DIR_NAME);
-  let installed = 0;
+  const summary = createSummary();
 
   for (const target of targets) {
     const targetDir = resolveTarget(target)[0];
@@ -83,62 +123,84 @@ function install(targets, skills) {
       }
 
       const dest = path.join(targetDir, name);
-      const existing = findExistingLink(src, targetDir);
 
-      if (existing && existing === dest) {
+      if (isCurrentSymlink(src, dest)) {
         console.log(`  [OK] ${name} → ${target} (already installed)`);
-        installed++;
+        summary.skipped++;
         continue;
       }
 
+      const existed = fs.existsSync(dest);
       if (fs.existsSync(dest)) {
+        if (!canReplace(src, dest)) {
+          console.log(`  [SKIP] ${name} → ${target} (existing unmanaged path)`);
+          summary.skipped++;
+          continue;
+        }
         fs.rmSync(dest, { recursive: true, force: true });
       }
 
       try {
         fs.symlinkSync(src, dest, 'dir');
         console.log(`  [OK] ${name} → ${target} (symlink)`);
-        installed++;
+        summary[existed ? 'updated' : 'installed']++;
       } catch (e) {
         copyDir(src, dest);
+        writeInstallMarker(dest, src);
         console.log(`  [OK] ${name} → ${target} (copied)`);
-        installed++;
+        summary[existed ? 'updated' : 'installed']++;
       }
     }
 
     // 安装 _shared 目录
     if (fs.existsSync(sharedSrc)) {
-      const sharedDest = path.join(targetDir, SHARED_DIR_NAME);
-      const existingShared = findExistingLink(sharedSrc, targetDir);
-
-      if (existingShared && existingShared === sharedDest) {
-        console.log(`  [OK] _shared → ${target} (already installed)`);
+      if (!hasManagedSkill(targetDir)) {
+        console.log(`  [SKIP] _shared → ${target} (no managed skills installed)`);
+        summary.skipped++;
         continue;
       }
 
+      const sharedDest = path.join(targetDir, SHARED_DIR_NAME);
+
+      if (isCurrentSymlink(sharedSrc, sharedDest)) {
+        console.log(`  [OK] _shared → ${target} (already installed)`);
+        summary.skipped++;
+        continue;
+      }
+
+      const sharedExisted = fs.existsSync(sharedDest);
       if (fs.existsSync(sharedDest)) {
+        if (!canReplace(sharedSrc, sharedDest)) {
+          console.log(`  [SKIP] _shared → ${target} (existing unmanaged path)`);
+          summary.skipped++;
+          continue;
+        }
         fs.rmSync(sharedDest, { recursive: true, force: true });
       }
 
       try {
         fs.symlinkSync(sharedSrc, sharedDest, 'dir');
         console.log(`  [OK] _shared → ${target} (symlink)`);
+        summary[sharedExisted ? 'updated' : 'installed']++;
       } catch (e) {
         copyDir(sharedSrc, sharedDest);
+        writeInstallMarker(sharedDest, sharedSrc);
         console.log(`  [OK] _shared → ${target} (copied)`);
+        summary[sharedExisted ? 'updated' : 'installed']++;
       }
     }
   }
 
-  return installed;
+  return summary;
 }
 
 /**
  * 卸载技能和共享资源
  */
 function uninstall(targets, skills) {
-  skills = skills || discoverSkills();
-  let removed = 0;
+  skills = unique(skills || discoverSkills());
+  const allSkills = discoverSkills();
+  const summary = createSummary();
 
   for (const target of targets) {
     const targetDir = resolveTarget(target)[0];
@@ -149,25 +211,43 @@ function uninstall(targets, skills) {
 
     // 卸载技能
     for (const name of skills) {
+      const src = path.join(SKILLS_DIR, name);
       const dest = path.join(targetDir, name);
       if (fs.existsSync(dest)) {
+        if (!canReplace(src, dest)) {
+          console.log(`  [SKIP] ${name} in ${target} (existing unmanaged path)`);
+          summary.skipped++;
+          continue;
+        }
         fs.rmSync(dest, { recursive: true, force: true });
         console.log(`  [OK] Removed: ${name} from ${target}`);
-        removed++;
+        summary.removed++;
       } else {
         console.log(`  [SKIP] Not installed: ${name} in ${target}`);
+        summary.skipped++;
       }
     }
 
     // 卸载 _shared
     const sharedDest = path.join(targetDir, SHARED_DIR_NAME);
+    const stillInstalled = allSkills.some(name => fs.existsSync(path.join(targetDir, name)));
     if (fs.existsSync(sharedDest)) {
-      fs.rmSync(sharedDest, { recursive: true, force: true });
-      console.log(`  [OK] Removed: _shared from ${target}`);
+      const sharedSrc = path.join(SKILLS_DIR, SHARED_DIR_NAME);
+      if (stillInstalled) {
+        console.log(`  [SKIP] Keeping _shared in ${target} (still in use)`);
+        summary.skipped++;
+      } else if (canReplace(sharedSrc, sharedDest)) {
+        fs.rmSync(sharedDest, { recursive: true, force: true });
+        console.log(`  [OK] Removed: _shared from ${target}`);
+        summary.removed++;
+      } else {
+        console.log(`  [SKIP] _shared in ${target} (existing unmanaged path)`);
+        summary.skipped++;
+      }
     }
   }
 
-  return removed;
+  return summary;
 }
 
 /**
@@ -293,22 +373,22 @@ function main() {
     const targets = requireTarget(args, 'install');
     const skills = args.length > 2 ? args.slice(2) : null;
     console.log(`\nInstalling skills to ${targets.join(', ')}...\n`);
-    const count = install(targets, skills);
-    console.log(`\nDone. ${count} skill(s) installed.`);
+    const summary = install(targets, skills);
+    console.log(`\nDone. ${formatSummary(summary, 'install')}.`);
   } else if (cmd === 'uninstall') {
     const targets = requireTarget(args, 'uninstall');
     const skills = args.length > 2 ? args.slice(2) : null;
     console.log(`\nRemoving skills from ${targets.join(', ')}...\n`);
-    const count = uninstall(targets, skills);
-    console.log(`\nDone. ${count} skill(s) removed.`);
+    const summary = uninstall(targets, skills);
+    console.log(`\nDone. ${formatSummary(summary, 'uninstall')}.`);
   } else if (cmd === 'list') {
     const targets = args[1] ? [args[1]] : Object.keys(AGENT_DIRS);
     list(targets);
   } else if (cmd === 'update') {
     const targets = requireTarget(args, 'update');
     console.log('\nUpdating skills...\n');
-    const count = install(targets);
-    console.log(`\nDone. ${count} skill(s) updated.`);
+    const summary = install(targets);
+    console.log(`\nDone. ${formatSummary(summary, 'update')}.`);
   } else {
     console.error(`Unknown command: ${cmd}`);
     printHelp();

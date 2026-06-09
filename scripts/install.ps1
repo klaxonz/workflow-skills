@@ -24,6 +24,11 @@ foreach ($cmd in @("git", "node", "npm")) {
 }
 
 if (Test-Path $InstallDir) {
+    if (-not (Test-Path (Join-Path $InstallDir ".git"))) {
+        err "Install directory exists but is not a git repo: $InstallDir"
+        err "Remove it or set WORKFLOW_SKILLS_HOME to another directory."
+        exit 1
+    }
     info "Updating existing installation at $InstallDir..."
     git -C $InstallDir pull --ff-only
 } else {

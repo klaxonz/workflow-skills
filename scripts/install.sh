@@ -28,6 +28,11 @@ done
 
 # Clone or update repo
 if [ -d "$INSTALL_DIR" ]; then
+  if [ ! -d "$INSTALL_DIR/.git" ]; then
+    err "Install directory exists but is not a git repo: $INSTALL_DIR"
+    err "Remove it or set WORKFLOW_SKILLS_HOME to another directory."
+    exit 1
+  fi
   info "Updating existing installation at $INSTALL_DIR..."
   git -C "$INSTALL_DIR" pull --ff-only
 else
