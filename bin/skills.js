@@ -3,9 +3,9 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { execSync } = require('child_process');
 
-const SKILLS = ['code-audit', 'code-fix', 'feature-flow'];
+const SKILLS_DIR = path.resolve(__dirname, '..', 'skills');
+const SHARED_DIR_NAME = '_shared';
 
 const AGENT_DIRS = {
   codex: ['.agents/skills', path.join(os.homedir(), '.agents/skills')],
@@ -14,10 +14,22 @@ const AGENT_DIRS = {
   windsurf: ['.windsurf/skills', path.join(os.homedir(), '.windsurf/skills')],
 };
 
-function getSkillDir() {
-  return path.resolve(__dirname, '..', 'skills');
+/**
+ * 自动发现技能目录
+ */
+function discoverSkills() {
+  if (!fs.existsSync(SKILLS_DIR)) {
+    return [];
+  }
+  return fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
+    .filter(d => d.isDirectory() && !d.name.startsWith('_'))
+    .filter(d => fs.existsSync(path.join(SKILLS_DIR, d.name, 'SKILL.md')))
+    .map(d => d.name);
 }
 
+/**
+ * 解析目标路径
+ */
 function resolveTarget(target) {
   const cwd = process.cwd();
   if (AGENT_DIRS[target]) return [path.join(cwd, AGENT_DIRS[target][0])];
@@ -34,10 +46,13 @@ function resolveTarget(target) {
   throw new Error(`Invalid target: ${target}`);
 }
 
-function findExistingLink(skillDir, targetDir) {
+/**
+ * 查找已存在的符号链接
+ */
+function findExistingLink(src, targetDir) {
   if (!fs.existsSync(targetDir)) return null;
-  const skillName = path.basename(skillDir);
-  const targetPath = path.join(targetDir, skillName);
+  const name = path.basename(src);
+  const targetPath = path.join(targetDir, name);
   try {
     const stat = fs.lstatSync(targetPath);
     if (stat.isSymbolicLink()) {
@@ -47,22 +62,25 @@ function findExistingLink(skillDir, targetDir) {
   return null;
 }
 
+/**
+ * 安装技能和共享资源
+ */
 function install(targets, skills) {
-  const sourceDir = getSkillDir();
-  skills = skills || SKILLS;
+  skills = skills || discoverSkills();
+  const sharedSrc = path.join(SKILLS_DIR, SHARED_DIR_NAME);
   let installed = 0;
 
   for (const target of targets) {
-    for (const name of skills) {
-      const src = path.join(sourceDir, name);
-      const targetDir = resolveTarget(target)[0];
+    const targetDir = resolveTarget(target)[0];
+    fs.mkdirSync(targetDir, { recursive: true });
 
+    // 安装技能
+    for (const name of skills) {
+      const src = path.join(SKILLS_DIR, name);
       if (!fs.existsSync(src)) {
         console.error(`  [SKIP] Skill not found: ${name}`);
         continue;
       }
-
-      fs.mkdirSync(targetDir, { recursive: true });
 
       const dest = path.join(targetDir, name);
       const existing = findExistingLink(src, targetDir);
@@ -87,13 +105,39 @@ function install(targets, skills) {
         installed++;
       }
     }
+
+    // 安装 _shared 目录
+    if (fs.existsSync(sharedSrc)) {
+      const sharedDest = path.join(targetDir, SHARED_DIR_NAME);
+      const existingShared = findExistingLink(sharedSrc, targetDir);
+
+      if (existingShared && existingShared === sharedDest) {
+        console.log(`  [OK] _shared → ${target} (already installed)`);
+        continue;
+      }
+
+      if (fs.existsSync(sharedDest)) {
+        fs.rmSync(sharedDest, { recursive: true, force: true });
+      }
+
+      try {
+        fs.symlinkSync(sharedSrc, sharedDest, 'dir');
+        console.log(`  [OK] _shared → ${target} (symlink)`);
+      } catch (e) {
+        copyDir(sharedSrc, sharedDest);
+        console.log(`  [OK] _shared → ${target} (copied)`);
+      }
+    }
   }
 
   return installed;
 }
 
+/**
+ * 卸载技能和共享资源
+ */
 function uninstall(targets, skills) {
-  skills = skills || SKILLS;
+  skills = skills || discoverSkills();
   let removed = 0;
 
   for (const target of targets) {
@@ -103,6 +147,7 @@ function uninstall(targets, skills) {
       continue;
     }
 
+    // 卸载技能
     for (const name of skills) {
       const dest = path.join(targetDir, name);
       if (fs.existsSync(dest)) {
@@ -113,11 +158,21 @@ function uninstall(targets, skills) {
         console.log(`  [SKIP] Not installed: ${name} in ${target}`);
       }
     }
+
+    // 卸载 _shared
+    const sharedDest = path.join(targetDir, SHARED_DIR_NAME);
+    if (fs.existsSync(sharedDest)) {
+      fs.rmSync(sharedDest, { recursive: true, force: true });
+      console.log(`  [OK] Removed: _shared from ${target}`);
+    }
   }
 
   return removed;
 }
 
+/**
+ * 列出已安装技能
+ */
 function list(targets) {
   for (const target of targets) {
     const targetDir = resolveTarget(target)[0];
@@ -126,8 +181,10 @@ function list(targets) {
       console.log('  (not found)');
       continue;
     }
+
     const entries = fs.readdirSync(targetDir, { withFileTypes: true });
     let found = false;
+
     for (const e of entries) {
       if (!e.isDirectory()) continue;
       const mdPath = path.join(targetDir, e.name, 'SKILL.md');
@@ -137,10 +194,23 @@ function list(targets) {
         found = true;
       }
     }
+
+    // 显示 _shared
+    const sharedPath = path.join(targetDir, SHARED_DIR_NAME);
+    if (fs.existsSync(sharedPath)) {
+      const stat = fs.lstatSync(sharedPath);
+      const link = stat.isSymbolicLink() ? ' (symlink)' : '';
+      console.log(`  ${SHARED_DIR_NAME}${link}`);
+      found = true;
+    }
+
     if (!found) console.log('  (no skills installed)');
   }
 }
 
+/**
+ * 复制目录
+ */
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
@@ -154,7 +224,11 @@ function copyDir(src, dest) {
   }
 }
 
+/**
+ * 打印帮助信息
+ */
 function printHelp() {
+  const skills = discoverSkills();
   console.log(`
 Usage: npx @klaxonz/workflow-skills <command> [options]
 
@@ -175,10 +249,11 @@ Targets:
   windsurf:global Windsurf (global)
   <path>        Custom target directory
 
-Skills:
-  code-audit    Code review and quality analysis
-  code-fix      Fix identified issues
-  feature-flow  Full feature lifecycle
+Skills (auto-discovered):
+${skills.map(s => `  ${s}`).join('\n')}
+
+Shared resources:
+  _shared/      Cross-skill conventions and templates
 
 Examples:
   npx @klaxonz/workflow-skills install codex
@@ -190,6 +265,9 @@ Examples:
 `);
 }
 
+/**
+ * 要求指定目标
+ */
 function requireTarget(args, command) {
   if (!args[1]) {
     console.error(`Missing target. Usage: npx @klaxonz/workflow-skills ${command} <target> [skills...]`);
@@ -199,6 +277,9 @@ function requireTarget(args, command) {
   return [args[1]];
 }
 
+/**
+ * 主函数
+ */
 function main() {
   const args = process.argv.slice(2);
   const cmd = args[0];

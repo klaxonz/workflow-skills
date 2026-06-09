@@ -16,6 +16,11 @@
 
 ```text
 skills/
+  _shared/
+    conventions.md          跨技能约定（issue 格式、命名规则、通用约束、交接协议）
+    templates/
+      issue.md              统一的问题报告模板
+      requirements.md       需求文档模板
   code-audit/
     SKILL.md
   code-fix/
@@ -103,15 +108,16 @@ CLI 没有默认 target。请显式选择要安装到哪个 Agent。
 
 ## 工作流产物
 
-技能可能会在 `{WORKFLOW_DIR}` 下创建工作流文档，默认目录是 `.workflow`。
+技能在 `{WORKFLOW_DIR}` 下创建工作流文档，默认目录 `.workflow`。
 
 ```text
 .workflow/
-  issues/
-  designs/
-  requirements/
-  requirements/.template.md
+  issues/          问题报告
+  designs/         设计方案
+  requirements/    需求文档
 ```
+
+文档模板内置于 `skills/_shared/templates/`，无需手动创建。
 
 ## 开发
 
@@ -122,3 +128,11 @@ git clone https://github.com/klaxonz/workflow-skills.git
 cd workflow-skills
 node scripts/validate.js
 ```
+
+### 添加新技能
+
+1. 在 `skills/` 下创建目录，添加 `SKILL.md`（含 frontmatter）
+2. 在 `_shared/conventions.md` 中更新相关约定（如有新文档类型）
+3. 运行 `node scripts/validate.js` 验证
+
+验证脚本会自动发现 `skills/` 目录下的新技能，无需手动注册。
