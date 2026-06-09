@@ -10,15 +10,17 @@
     "code-audit",
     "workflow",
     "ai-coding",
+    "codex",
     "claude-code",
     "opencode",
     "windsurf"
   ],
   "files": [
+    ".codex-plugin/",
+    ".claude-plugin/",
+    ".opencode/",
     "bin/",
-    "code-audit/",
-    "code-fix/",
-    "feature-flow/",
+    "skills/",
     "scripts/",
     "README.md"
   ],

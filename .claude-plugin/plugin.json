@@ -1,0 +1,17 @@
+{
+  "name": "workflow-skills",
+  "description": "Project development workflow skills for Claude Code: code audit, issue fixes, and feature delivery.",
+  "version": "1.0.0",
+  "author": {
+    "name": "klaxonz"
+  },
+  "homepage": "https://github.com/klaxonz/workflow-skills",
+  "repository": "https://github.com/klaxonz/workflow-skills",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "code-audit",
+    "workflow",
+    "claude-code"
+  ]
+}

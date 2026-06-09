@@ -1,0 +1,33 @@
+{
+  "name": "workflow-skills",
+  "version": "1.0.0",
+  "description": "Project development workflow skills for code audit, issue fixes, and feature delivery.",
+  "author": {
+    "name": "klaxonz"
+  },
+  "homepage": "https://github.com/klaxonz/workflow-skills",
+  "repository": "https://github.com/klaxonz/workflow-skills",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "code-audit",
+    "workflow",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Workflow Skills",
+    "shortDescription": "Code audit, fix, and feature delivery workflows for coding agents",
+    "longDescription": "Use Workflow Skills to guide code audits, issue-driven fixes, and feature delivery with requirements, design, implementation, review, testing, and wrap-up workflows.",
+    "developerName": "klaxonz",
+    "category": "Coding",
+    "capabilities": [
+      "Code audits",
+      "Issue fixes",
+      "Feature delivery workflows"
+    ],
+    "defaultPrompt": [
+      "Use Workflow Skills when auditing code, fixing tracked issues, or implementing features."
+    ]
+  }
+}

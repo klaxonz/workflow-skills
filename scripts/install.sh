@@ -2,12 +2,12 @@
 set -euo pipefail
 
 # One-click install script for Workflow Skills
-# Usage: curl -fsSL https://raw.githubusercontent.com/klaxonz/workflow-skills/main/scripts/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/klaxonz/workflow-skills/main/scripts/install.sh | bash -s -- codex
 
 REPO="klaxonz/workflow-skills"
 REPO_URL="https://github.com/${REPO}.git"
 INSTALL_DIR="${WORKFLOW_SKILLS_HOME:-$HOME/.workflow-skills}"
-TARGET="${1:-claude}"
+TARGET="${1:-}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -36,12 +36,17 @@ else
 fi
 
 # Install skills via CLI
+if [ -z "$TARGET" ]; then
+  err "Missing target. Choose codex, codex:global, claude, claude:global, opencode, or another explicit target."
+  exit 1
+fi
+
 info "Installing skills to target: $TARGET"
 node "$INSTALL_DIR/bin/skills.js" install "$TARGET"
 
 ok "Workflow Skills installed successfully!"
 echo ""
 echo "Quick start:"
-echo "  npx skills list          # List installed skills"
-echo "  npx skills install global # Install globally"
-echo "  npx skills update        # Update to latest version"
+echo "  npx @klaxonz/workflow-skills list codex           # List Codex project skills"
+echo "  npx @klaxonz/workflow-skills install codex:global # Install globally for Codex"
+echo "  npx @klaxonz/workflow-skills update codex         # Update project install"

@@ -9,7 +9,7 @@ const SKILLS = ['code-audit', 'code-fix', 'feature-flow'];
 const REQUIRED_META = ['name', 'description'];
 
 function validateSkill(name) {
-  const skillDir = path.join(ROOT, name);
+  const skillDir = path.join(ROOT, 'skills', name);
   const mdPath = path.join(skillDir, 'SKILL.md');
 
   if (!fs.existsSync(mdPath)) {

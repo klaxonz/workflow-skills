@@ -1,8 +1,9 @@
 # One-click install script for Workflow Skills (Windows)
-# Usage: irm https://raw.githubusercontent.com/klaxonz/workflow-skills/main/scripts/install.ps1 | iex
+# Usage: & ([scriptblock]::Create((irm https://raw.githubusercontent.com/klaxonz/workflow-skills/main/scripts/install.ps1))) -Target codex
 
 param(
-    [string]$Target = "claude"
+    [Parameter(Mandatory = $true)]
+    [string]$Target
 )
 
 $ErrorActionPreference = "Stop"
@@ -36,6 +37,6 @@ node "$InstallDir\bin\skills.js" install $Target
 ok "Workflow Skills installed successfully!"
 Write-Host ""
 Write-Host "Quick start:"
-Write-Host "  npx skills list          # List installed skills"
-Write-Host "  npx skills install global # Install globally"
-Write-Host "  npx skills update        # Update to latest version"
+Write-Host "  npx @klaxonz/workflow-skills list codex           # List Codex project skills"
+Write-Host "  npx @klaxonz/workflow-skills install codex:global # Install globally for Codex"
+Write-Host "  npx @klaxonz/workflow-skills update codex         # Update project install"
