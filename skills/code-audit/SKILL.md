@@ -26,7 +26,11 @@ description: Analyze code for design and quality issues — code smells, archite
 
 ### Step 2: 执行扫描
 
-按关注点逐项扫描。每项用 `rg`（ripgrep）等工具实际检索代码，不只凭记忆。
+按关注点逐项扫描。能用 rg 的用 rg，不能的逐文件阅读。
+
+> **自动化检查**（直接执行 rg/工具）: 异常被吞、硬编码密钥、命令注入、路径遍历、SQL 注入、TODO/FIXME/HACK/XXX
+> **半自动检查**（先 rg 搜关键词再人工判断）: 日志无上下文、资源泄漏、魔法数字、未使用 import
+> **人工阅读**（逐文件/逐模块分析）: 红线合规、循环依赖、职责不清、违反分层、错误分类缺失、废弃代码、测试覆盖真实性、命名传达意图
 
 #### 红线合规
 
@@ -91,15 +95,15 @@ description: Analyze code for design and quality issues — code smells, archite
 **输出汇总表，让用户选择创建哪些：**
 
 ```markdown
-## 审计发现
+## 审计发现 — 共 N 项
 
-共 N 项。选择要创建的 issue：
+请回复要创建哪些（如 "全部" / "1,2,4" / "跳过"）：
 
-| # | 问题 | 严重度 | 位置 | 创建? |
-|---|------|--------|------|:----:|
-| 1 | 硬编码 API Key | critical | src/config.ts:12 | [ ] |
-| 2 | 空 catch 块 | medium | src/parser.ts:42, src/loader.ts:78 | [ ] |
-| 3 | 循环依赖 | high | src/a.ts ↔ src/b.ts | [ ] |
+| # | 问题 | 严重度 | 位置 |
+|---|------|--------|------|
+| 1 | 硬编码 API Key | critical | src/config.ts:12 |
+| 2 | 空 catch 块 | medium | src/parser.ts:42, src/loader.ts:78 |
+| 3 | 循环依赖 | high | src/a.ts ↔ src/b.ts |
 ```
 
 用户确认后再进入 Step 5。

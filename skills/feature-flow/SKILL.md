@@ -42,7 +42,7 @@ description: Full lifecycle for planned new features — requirements, design, i
 
 ### Step 2: 设计方案
 
-按 `_shared/templates/design.md`（`type: feature`）输出到 `{WORKFLOW_DIR}/designs/design-<NNN>-<name>.md`。
+按 `_shared/templates/design.md`（`type: feature`）输出到 `{WORKFLOW_DIR}/designs/design-<NNN>-<name>.md`。`<NNN>` 取 design 目录下一个可用编号，`<name>` **必须** 与需求文档 frontmatter 的 `name` 一致。
 
 **必须包含：** 需求映射、涉及文件、复用检查、风险点、实现顺序。
 

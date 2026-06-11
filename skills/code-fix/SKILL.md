@@ -16,7 +16,8 @@ description: Fix issues identified by audit or reported by user. Use when the us
 - 用户指定编号 → 读取 `{WORKFLOW_DIR}/issues/issue-<NNN>-*.md`
 - 用户报告缺陷但没有 issue → 按 `_shared/templates/issue.md` 创建 `source: manual`，再继续
 - 创建前扫描目录取下一个可用编号
-- 定位不明确时 `locations` 写 `project-wide`，后续调研补全
+- 定位不明确时 `locations` 写 `project-wide`，`severity`、`category` 先填最可能的，后续调研补全
+- issue frontmatter `status` 改为 `in_progress`
 
 ---
 
@@ -75,7 +76,7 @@ lint: pass  type-check: pass  test: pass
 
 ### Step 5: 收尾
 
-1. issue `status: fixed`，`fixed_by` 指向设计文档
+1. issue `status: fixed`，`fixed_by: designs/design-<NNN>-<name>.md`
 2. 设计文档 `status: implemented`
 3. 输出报告：
 
