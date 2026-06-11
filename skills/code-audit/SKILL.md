@@ -39,7 +39,7 @@ description: Analyze code for design and quality issues — code smells, archite
 
 | 检查项 | 检测方法 |
 |--------|----------|
-| 对照项目红线规则 | 读取项目中的红线规则文件（如 `CLAUDE.md`、`.cursorrules`、`CONTRIBUTING.md`），逐条检查代码是否违反 |
+| 对照项目红线规则 | 读取项目的红线规则文件（如 `CONTRIBUTING.md` 中的 Do Not Modify 清单、`.gitattributes` 标记的只读文件），逐条检查代码是否违反 |
 
 #### 架构问题
 
@@ -85,6 +85,24 @@ description: Analyze code for design and quality issues — code smells, archite
 
 > **quick 深度**：只扫红线合规 + 安全问题。
 > **deep 深度**：额外绘制模块依赖图、分析测试覆盖率数据、追踪关键函数调用链。
+
+---
+
+### 扫描结果→Issue category 映射
+
+| 扫描检查项 | Issue category |
+|------------|---------------|
+| 红线合规 | `compliance` |
+| 循环依赖、职责不清、违反分层 | `architecture` |
+| 异常被吞、日志无上下文、错误分类缺失 | `error-handling` |
+| 硬编码密钥、命令注入、路径遍历、SQL 注入 | `security` |
+| TODO/FIXME/HACK/XXX、废弃代码、未使用 import | `dead-code` |
+| 测试覆盖真实性 | `test-quality` |
+| 命名传达意图 | `naming` |
+| 资源泄漏 | `reliability` |
+| 魔法数字 | `maintainability` |
+
+边界不清晰时参照 `_shared/conventions.md` 类别边界判断。
 
 ---
 
@@ -179,11 +197,7 @@ try {
 
 ## 配置变量
 
-| 变量 | 说明 | 默认值 |
-|------|------|--------|
-| `WORKFLOW_DIR` | 工作目录路径 | `.workflow` |
-
----
+工作流目录、命名约定等跨技能配置见 `_shared/conventions.md`。
 
 ## 约束
 

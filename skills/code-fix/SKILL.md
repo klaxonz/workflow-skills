@@ -27,17 +27,15 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
    - 验证 issue frontmatter 包含必要字段：`title`、`status`、`severity`、`category`、`locations`、`source`
    - 格式不符时，按 `_shared/templates/issue.md` 补全缺失字段
 
-3. **确认范围**
+3. **标记状态**
+   - issue frontmatter 中 `status` 改为 `in_progress`
+
+4. **确认范围与工作区**
    - 涉及哪些文件（从 `locations` 字段和问题描述中提取）
    - 是否触及红线（对照项目红线规则）
-
-4. **检查工作区状态**
    - 运行 `git status` / `git diff`，确认不覆盖他人未提交改动
    - 未提交改动不涉及本 issue 的 `locations` 或计划修改文件时，记录后继续
    - 未提交改动涉及同一文件或会影响修复判断时，先向用户确认
-
-5. **标记状态**
-   - issue frontmatter 中 `status` 改为 `in_progress`
 
 ---
 
@@ -118,7 +116,7 @@ related_issue: issues/<issue-file>.md
 
 **进入编码规则：**
 - 涉及跨模块改动、公共接口变更、数据迁移、权限/安全逻辑或行为兼容性变化时，必须等待用户确认
-- 低风险局部修复（如死代码、命名、空 catch、缺少日志、测试断言补充）可直接实施，并在方案文档中记录判断依据
+- 低风险局部修复（如死代码删除、命名修正、空 catch 添加日志、缺失 import 补充）可直接实施，并在方案文档中记录判断依据
 
 ---
 
@@ -141,6 +139,11 @@ related_issue: issues/<issue-file>.md
    - 如发现修复方案需要调整，回到 Step 2 更新方案后再继续
    - 重大调整需再次向用户确认
    - 如确认无法继续修复，将 issue `status` 改为 `blocked`，并在 issue 的 `## 修复尝试` 中记录阻塞原因和已验证事实
+   - 阻塞的典型场景：
+     - 缺少外部依赖（如需要 API key、第三方服务权限）
+     - 需要用户提供更多信息（如错误复现步骤、账号凭证）
+     - 修复风险超出当前技能范围（如涉及数据迁移、架构变更），需用户决策
+     - 等待其他未完成的修复（如依赖 issue 尚未 fixed）
 
 ---
 
@@ -212,11 +215,7 @@ related_issue: issues/<issue-file>.md
 
 ## 配置变量
 
-| 变量 | 说明 | 默认值 |
-|------|------|--------|
-| `WORKFLOW_DIR` | 工作目录路径 | `.workflow` |
-
----
+工作流目录、命名约定等跨技能配置见 `_shared/conventions.md`。
 
 ## 约束
 

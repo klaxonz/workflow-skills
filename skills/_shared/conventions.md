@@ -67,13 +67,19 @@ fixed_by:
 | `architecture` | 架构问题：循环依赖、职责不清、违反分层 |
 | `security` | 安全问题：硬编码密钥、注入漏洞、路径遍历 |
 | `compliance` | 合规问题：违反项目红线规则 |
-| `error-handling` | 错误处理：异常被吞、日志无上下文 |
+| `error-handling` | 错误处理：异常被吞、日志无上下文、错误类型映射错误 |
 | `dead-code` | 废弃代码：未使用的 import、注释掉的代码块 |
 | `test-quality` | 测试质量：缺少断言、mock 过度、只测 happy path |
 | `naming` | 命名问题：变量名过于泛化、函数名不表达意图 |
 | `reliability` | 可靠性问题：竞态、状态不一致、边界条件导致故障 |
 | `maintainability` | 可维护性问题：复杂度过高、重复逻辑、难以演进 |
 | `performance` | 性能问题：不必要的重复计算、低效查询、资源占用过高 |
+
+**类别边界判断：**
+- `error-handling` vs `reliability`：异常 **被吞没或分类错误** 用 `error-handling`；**状态不一致或竞态导致故障** 用 `reliability`
+- `maintainability` vs `architecture`：**模块内部** 的重复/复杂度用 `maintainability`；**模块之间** 的依赖/分层问题用 `architecture`
+- `compliance` vs `security`：**违反项目自定规则** 用 `compliance`；**外部可攻击的漏洞** 用 `security`
+- 无法判定时选最接近的一个，在 issue 正文中说明理由
 
 ---
 
@@ -87,10 +93,19 @@ fixed_by:
 | Issue | `issue-<NNN>-<title>.md` | `issue-001-empty-catch.md` |
 
 命名规则：
-- `<name>`: 功能名称，英文短横线命名（kebab-case）
+- `<name>`: 功能名称，英文短横线命名（kebab-case），如 `video-quality-selector`
 - `<issue-id>`: Issue 编号，如 `issue-001`
 - `<NNN>`: 三位数字编号，从 001 开始递增
 - `<title>`: 问题简述的 slug 形式
+
+**slug 规范化规则：**
+1. 全部转为小写字母
+2. 中文/特殊字符移除或转为英文描述
+3. 空格和标点替换为连字符 `-`
+4. 多个连字符合并为一个
+5. 首尾不带连字符
+6. 总长度不超过 60 字符
+7. 示例：`"空 catch 块吞没异常"` → `empty-catch-swallows-exceptions`
 
 补充规则：
 - 需求编号在 `{WORKFLOW_DIR}/requirements/` 内递增；创建需求前必须重新扫描该目录，取下一个可用三位编号。
@@ -109,7 +124,7 @@ fixed_by:
 
 | 规则 | 说明 |
 |------|------|
-| **不改红线文件** | 对照项目红线规则（如 CLAUDE.md、.cursorrules），不修改明确禁止的文件 |
+| **不改红线文件** | 对照项目的红线规则文件（如 `CONTRIBUTING.md` 中的 Do Not Modify 清单、`.gitattributes` 标记的只读文件），不修改明确禁止的文件 |
 | **不改未涉及模块** | 不顺手重构或格式化与当前任务无关的代码 |
 | **不提交代码** | 除非用户明确要求，否则不执行 git commit/push |
 | **保持最小变更** | 只改解决问题需要的行，避免整文件重写 |
@@ -163,3 +178,9 @@ fixed_by:
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
 | `WORKFLOW_DIR` | 工作目录路径，存放 issues、designs、requirements | `.workflow` |
+
+**`{WORKFLOW_DIR}` 解析规则：**
+1. 如果环境变量 `WORKFLOW_DIR` 已设置，使用其值（绝对路径或相对于项目根）
+2. 否则使用默认值 `.workflow`（相对于项目根目录）
+3. `{WORKFLOW_DIR}/issues/`、`{WORKFLOW_DIR}/designs/`、`{WORKFLOW_DIR}/requirements/` 目录按需创建
+4. 各 SKILL.md 不再重复定义此变量，统一引用本文档

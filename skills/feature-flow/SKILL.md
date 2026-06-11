@@ -13,12 +13,14 @@ description: Full feature lifecycle for planned new features — requirements ga
 
 ### 触发边界
 
-仅当用户要求新增或实现功能时使用本流程。以下输入不得触发本流程：
+**触发条件：** 用户要求新增功能、添加模块、实现需求，且包含或可提取验收标准。
+
+**不触发条件（交给 `code-fix`）：**
 - 报错日志、traceback、stack trace
 - 启动失败、运行时异常、导入错误、测试失败
 - 回归、线上缺陷、"刚才这样报错"、"这里坏了" 等 bug 报告
 
-这类输入应交给 `code-fix`：先按 `_shared/templates/issue.md` 创建 `source: manual` 的 issue，再进入修复流程。
+**边界模糊时：** 如果用户描述同时包含「新功能」和「缺陷」要素，优先判断用户主意图。无法判定时向用户确认。
 
 ### Step 0: 需求获取
 
@@ -183,7 +185,7 @@ related_issue:
 |--------|-----------|----------|
 | Lint | 按项目配置运行 | 注明"项目无 lint 配置" |
 | 类型检查 | 如有则运行 | 跳过 |
-| 单元测试 | 运行涉及模块的测试 | 见下方"无测试时" |
+| 测试 | 运行涉及模块的测试 | 见下方"无测试时" |
 | 集成测试 | 如有则运行 | 跳过 |
 | 手动验证 | 按验收标准逐条验证 | **必做** |
 
@@ -210,7 +212,7 @@ related_issue:
 **验证结果记录格式：**
 
 ```
-验证: lint [Y/N/SKIP]  type-check [Y/N/SKIP]  unit-test [Y/N/SKIP]  manual [Y/N]
+验证: lint [Y/N/SKIP]  type-check [Y/N/SKIP]  test [Y/N/SKIP]  manual [Y/N]
 验收标准: [1/3] [2/3] [3/3] (通过/总数)
 ```
 
@@ -228,6 +230,10 @@ related_issue:
 2. **更新文档状态**
    - 需求文档 `status: done`
    - 设计文档 `status: implemented`
+   - 如果功能中途取消或放弃：
+     - 需求文档 `status: cancelled`
+     - 设计文档 `status: cancelled`
+     - 在文档正文记录取消原因和已完成/未完成的部分
 
 3. **输出报告**
 
@@ -243,7 +249,7 @@ related_issue:
 
 **代码变化**: +156 -12
 
-**验证**: lint Y  type-check Y  unit-test Y  manual Y
+**验证**: lint Y  type-check Y  test Y  manual Y
 
 **验收标准**: 3/3 通过
 ```
@@ -279,11 +285,7 @@ related_issue:
 
 ## 配置变量
 
-| 变量 | 说明 | 默认值 |
-|------|------|--------|
-| `WORKFLOW_DIR` | 工作目录路径 | `.workflow` |
-
----
+工作流目录、命名约定等跨技能配置见 `_shared/conventions.md`。
 
 ## 约束
 
