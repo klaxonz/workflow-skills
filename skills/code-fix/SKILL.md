@@ -1,229 +1,101 @@
 ---
 name: code-fix
-description: Fix issues identified by code-audit or other issue reports. Use when the user wants to fix a specific issue by number, resolve audit findings, submit a bug, paste a crash log, traceback, stack trace, failed test, runtime error, import error, regression, startup failure, or says "fix issue XXX" or "修 issue XXX".
+description: Fix issues identified by audit or reported by user. Use when the user asks to fix a specific issue by number, submits a bug, pastes a crash log, traceback, stack trace, failed test, runtime error, import error, regression, startup failure, or says "fix issue XXX" or "修 issue XXX".
 ---
 
-# Code Fix Workflow
+# Code Fix
 
-修复问题报告的标准化流程，从 issue 到验证通过的完整闭环。
-
----
-
-## 工作流程
-
-### Step 0: 前置检查
-
-1. **定位或创建 issue**
-   - 用户指定 issue 编号时，在 `{WORKFLOW_DIR}/issues/` 目录下查找指定 issue
-   - 用户未指定 issue 但描述了缺陷现象、粘贴报错日志、traceback、stack trace、启动失败或测试失败时，按 `_shared/templates/issue.md` 创建 `source: manual` 的 issue，再继续本流程
-   - manual issue 文件必须命名为 `{WORKFLOW_DIR}/issues/issue-<NNN>-<title>.md`
-   - 创建 manual issue 前重新扫描 `{WORKFLOW_DIR}/issues/`，如编号已存在，递增到下一个可用编号
-   - 用户只需要提供观察到的现象；原因、代码位置、分类和影响范围由 Agent 调研后补全
-   - 初始 `severity`、`category`、`locations` 由 Agent 根据现象和初步调研填写；定位不明确时 `locations` 可先写 `project-wide`
-   - 如 issue 编号不明确且用户没有描述新缺陷，列出可选 issue 供用户选择
-
-2. **读取并验证 issue**
-   - 读取 issue 文件，理解问题描述、影响、建议方向
-   - 验证 issue frontmatter 包含必要字段：`title`、`status`、`severity`、`category`、`locations`、`source`
-   - 格式不符时，按 `_shared/templates/issue.md` 补全缺失字段
-
-3. **标记状态**
-   - issue frontmatter 中 `status` 改为 `in_progress`
-
-4. **确认范围与工作区**
-   - 涉及哪些文件（从 `locations` 字段和问题描述中提取）
-   - 是否触及红线（对照项目红线规则）
-   - 运行 `git status` / `git diff`，确认不覆盖他人未提交改动
-   - 未提交改动不涉及本 issue 的 `locations` 或计划修改文件时，记录后继续
-   - 未提交改动涉及同一文件或会影响修复判断时，先向用户确认
+从 issue 到验证通过的修复流程。
 
 ---
 
-### Step 1: 调研代码
+## 流程
 
-1. **理解现有逻辑**
-   - 读取问题相关的源代码
-   - 理解问题所在函数/模块的职责
-   - 找出上下游调用者
-   - 对 `source: manual` 的 issue，从用户现象出发定位根因、准确 `locations`、真实影响和可复现路径；必要时回填 issue 的“现象与复现信息”
+### Step 0: 定位 issue
 
-2. **检查测试情况**
-   - 是否有覆盖该代码的测试
-   - 测试是否覆盖问题场景
+- 用户指定编号 → 读取 `{WORKFLOW_DIR}/issues/issue-<NNN>-*.md`
+- 用户报告缺陷但没有 issue → 按 `_shared/templates/issue.md` 创建 `source: manual`，再继续
+- 创建前扫描目录取下一个可用编号
+- 定位不明确时 `locations` 写 `project-wide`，后续调研补全
 
-3. **检查同类问题**
-   - 搜索是否有相同模式的其他位置
-   - 如有，询问用户是否一并修复（减少噪音）
+---
+
+### Step 1: 调研
+
+1. 读问题相关代码，理解函数/模块职责和上下游调用者
+2. 对 `source: manual` issue，从现象出发定位根因和准确 `locations`
+3. 检查是否有覆盖该代码的测试
+4. 搜索同类模式的其他位置
 
 ---
 
 ### Step 2: 设计方案
 
-按 `_shared/templates/design.md` 输出简短方案到 `{WORKFLOW_DIR}/designs/des-fix-<issue-id>-<title>.md`。
+按 `_shared/templates/design.md`（`type: fix`）输出方案到 `{WORKFLOW_DIR}/designs/design-<NNN>-<name>.md`。
 
-设计文档 frontmatter：
+**必须包含：** 根因、修复思路、涉及文件、潜在风险。
 
-```yaml
+**确认规则：**
+- 跨模块改动、接口变更、行为兼容性变化 → **必须等用户确认**
+- 局部改动（死代码删除、加日志、加 import）→ 可自定，在方案中记录判断依据
+- 不确定 → 问用户
+
 ---
-type: fix
-name: <issue-id>
-status: proposed
-related_requirement:
-related_issue: issues/<issue-file>.md
+
+### Step 3: 实施
+
+1. 按方案逐个文件修改，用精确替换（Edit），避免整文件重写
+2. 每次改后自查：是否引入新问题、是否超出方案范围
+3. 修改前确认文件不在红线列表中
+4. 方案需要调整 → 回 Step 2 更新后再继续
+5. 无法继续 → issue `status: blocked`，在 `## 修复尝试` 记录原因
+
 ---
+
+### Step 4: 验证
+
+按项目实际工具执行：
+
+| 检查 | 命令 | 无此工具 |
+|------|------|----------|
+| Lint | `npx eslint` / `flake8` / `cargo clippy` | 跳过 |
+| 类型检查 | `npx tsc --noEmit` / `mypy` | 跳过 |
+| 测试 | 运行涉及文件的测试 | 跳过 |
+
+验证结果写回设计文档 `## 验证结果`。格式：
+```text
+lint: pass  type-check: pass  test: pass
 ```
 
-**方案必须包含：**
+验证失败 → 回 Step 3 修正，或更新方案回 Step 2。
 
-| 项目 | 说明 |
-|------|------|
-| **根因** | 为什么会出现这个问题（不是"代码写错了"，而是设计/流程/认知层面的原因） |
-| **修复思路** | 具体改什么、怎么改（1-3 句话，足以让审查者理解意图） |
-| **涉及文件** | 列出需要修改的文件及每个文件的改动概要 |
-| **潜在风险** | 修复可能影响的上下游、是否需要同步修改测试 |
-| **同类问题** | 是否有相同模式的其他位置需要一并修复 |
-| **验证结果** | 收尾时填写 lint/type-check/test/manual 的最终结果 |
-
-**示例：**
-
-```markdown
-# 修复方案：issue-001 空 catch 块
-
-## 根因
-
-开发者对异常处理的认识不足，认为配置解析失败可以用默认值，但忽略了日志记录的重要性。
-
-## 修复思路
-
-1. 在 catch 块中添加错误日志，记录解析失败的原因
-2. 保持返回默认值的行为（符合原设计意图）
-3. 同步修改测试，覆盖异常场景
-
-## 涉及文件
-
-- `src/utils/parser.ts`: 添加 catch 块日志
-- `src/utils/parser.test.ts`: 添加异常场景测试
-
-## 潜在风险
-
-- 日志格式需与项目现有日志风格一致
-- 不影响调用方的错误处理逻辑
-
-## 同类问题
-
-- `src/utils/loader.ts:78` 有相同的空 catch 块，建议一并修复
-```
-
-**进入编码规则：**
-- 涉及跨模块改动、公共接口变更、数据迁移、权限/安全逻辑或行为兼容性变化时，必须等待用户确认
-- 低风险局部修复（如死代码删除、命名修正、空 catch 添加日志、缺失 import 补充）可直接实施，并在方案文档中记录判断依据
+> **不自行评估"手动验证通过"。** 修改后请用户在实际环境中确认行为是否符合预期。
 
 ---
 
-### Step 3: 实施修复
+### Step 5: 收尾
 
-1. **按设计方案逐个文件修改**
+1. issue `status: fixed`，`fixed_by` 指向设计文档
+2. 设计文档 `status: implemented`
+3. 输出报告：
 
-2. **每次修改后复查：**
-   - 是否引入新问题（lint 错误、类型错误、逻辑遗漏）
-   - 是否超出方案范围（顺手重构、格式化不相关代码）
+```text
+改动文件: N
++新增 -删除
+验证: lint [pass/fail/skip]  type-check [pass/fail/skip]  test [pass/fail/skip]
 
-3. **红线检查**
-   - 修改前确认文件不在红线列表中
-
-4. **最小变更**
-   - 优先使用精确替换（Edit 工具），避免整文件重写
-   - 只改解决问题需要的行
-
-5. **方案调整**
-   - 如发现修复方案需要调整，回到 Step 2 更新方案后再继续
-   - 重大调整需再次向用户确认
-   - 如确认无法继续修复，将 issue `status` 改为 `blocked`，并在 issue 的 `## 修复尝试` 中记录阻塞原因和已验证事实
-   - 阻塞的典型场景：
-     - 缺少外部依赖（如需要 API key、第三方服务权限）
-     - 需要用户提供更多信息（如错误复现步骤、账号凭证）
-     - 修复风险超出当前技能范围（如涉及数据迁移、架构变更），需用户决策
-     - 等待其他未完成的修复（如依赖 issue 尚未 fixed）
-
----
-
-### Step 4: 自我审查
-
-1. **覆盖检查**
-   - 所有问题点是否已覆盖
-   - issue 中列出的所有位置是否都已处理
-
-2. **改动检查**
-   - 改动是否符合设计方案
-   - 是否有遗漏或多余改动
-
-3. **格式检查**
-   - 是否引入了不需要的格式化
-   - 代码风格是否与项目一致
-
----
-
-### Step 5: 验证
-
-按以下优先级执行，项目不具备的工具跳过并注明：
-
-| 验证项 | 命令/方法 | 不具备时 |
-|--------|-----------|----------|
-| Lint | 按项目配置运行（如 `npx eslint`、`flake8`、`cargo clippy`） | 注明"项目无 lint 配置" |
-| 类型检查 | 如有（如 `npx tsc --noEmit`、`mypy`） | 跳过 |
-| 相关测试 | 运行涉及文件的测试 | 如无测试，手动验证修复逻辑 |
-| 手动验证 | 对修复点构造边界用例，确认修复有效且无副作用 | **必做** |
-
-**手动验证方法：**
-1. 构造触发原问题的输入
-2. 确认问题不再复现
-3. 构造边界用例，确认无副作用
-
-**验证结果记录格式：**
-
-```
-验证: lint [Y/N/SKIP]  type-check [Y/N/SKIP]  test [Y/N/SKIP]  manual [Y/N]
+请在实际环境中确认修复效果。
 ```
 
-验证结果必须写回修复设计文档的 `## 验证结果`。验证失败时，不关闭 issue；在 issue 的 `## 修复尝试` 中记录失败命令、失败原因和下一步建议。
+4. 修复中新发现的问题 → 创建 issue（`source: code-fix`），报告后建议后续处理
 
 ---
-
-### Step 6: 关闭 issue + 报告结果
-
-1. **更新 issue 状态**
-   - issue frontmatter `status` 改为 `fixed`
-   - 填写 `fixed_by: designs/des-fix-<issue-id>-<title>.md`
-   - 修复设计文档 frontmatter `status` 改为 `implemented`
-
-2. **输出简短报告**
-
-```
-<文件>:<行号> — 修复了什么问题
-验证: lint Y  type-check Y  test Y  manual Y
-
-改动文件: N 个
-新增代码: +X 行
-删除代码: -Y 行
-```
-
-3. **后续操作**
-   - 如修复过程中创建了新 issue，按 `_shared/templates/issue.md` 填写 `severity`、`category`、`locations`、`source: code-fix`，向用户报告并建议后续处理
-   - 如用户要求，可继续修复下一个 issue
-
----
-
-## 配置变量
-
-工作流目录、命名约定等跨技能配置见 `_shared/conventions.md`。
 
 ## 约束
 
 | 规则 | 说明 |
 |------|------|
-| **保持最小变更** | 只改解决问题需要的行 |
-| **不改红线文件** | 对照项目红线规则 |
-| **不改未涉及模块** | 不顺手格式化不相关代码 |
-| **不提交代码** | 除非用户明确要求 |
-
-> 通用约束见 `_shared/conventions.md`。
+| **最小变更** | 只改需要的行 |
+| **不改红线文件** | 对照项目红线 |
+| **不改无关模块** | 不顺手重构 |
+| **不提交** | 除非用户要求 |
