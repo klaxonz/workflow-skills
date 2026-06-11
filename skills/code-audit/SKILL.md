@@ -86,7 +86,7 @@ description: Analyze code for design and quality issues — code smells, archite
 
 - 同类问题合并（如多个文件的空 catch 块 → 一个 issue）
 - 按 `_shared/conventions.md` 中的严重度定义分配 severity
-- 检查已有 issue，避免重复创建
+- 检查已有 issue（`open`、`in_progress`、`blocked`），避免重复创建
 
 ---
 

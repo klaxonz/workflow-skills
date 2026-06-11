@@ -26,7 +26,7 @@ description: Full lifecycle for planned new features — requirements, design, i
 | 场景 | 行为 |
 |------|------|
 | `{WORKFLOW_DIR}/requirements/` 下已有需求文档 | 跳到 Step 1 |
-| 用户口头描述 | 按 `_shared/templates/requirements.md` 创建，向用户复述确认 |
+| 用户口头描述 | 按 `_shared/templates/requirements.md` 创建，**将验收标准单独列出请用户确认**，通过后再继续 |
 
 需求文档命名 `req-<NNN>-<name>.md`，`<NNN>` 三位递增。
 

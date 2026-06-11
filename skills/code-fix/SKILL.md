@@ -32,7 +32,7 @@ description: Fix issues identified by audit or reported by user. Use when the us
 
 ### Step 2: 设计方案
 
-按 `_shared/templates/design.md`（`type: fix`）输出方案到 `{WORKFLOW_DIR}/designs/design-<NNN>-<name>.md`。
+按 `_shared/templates/design.md`（`type: fix`）输出方案到 `{WORKFLOW_DIR}/designs/design-<NNN>-<name>.md`。`<NNN>` 取 design 目录下一个可用编号，`<name>` **必须** 使用 issue 文件名的 `<slug>`。
 
 **必须包含：** 根因、修复思路、涉及文件、潜在风险。
 
