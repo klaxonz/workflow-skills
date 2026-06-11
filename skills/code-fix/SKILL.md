@@ -1,6 +1,6 @@
 ---
 name: code-fix
-description: Fix issues identified by code-audit or other issue reports. Use when the user wants to fix a specific issue by number, resolve audit findings, or says "fix issue XXX" or "修 issue XXX".
+description: Fix issues identified by code-audit or other issue reports. Use when the user wants to fix a specific issue by number, resolve audit findings, submit a bug, paste a crash log, traceback, stack trace, failed test, runtime error, import error, regression, startup failure, or says "fix issue XXX" or "修 issue XXX".
 ---
 
 # Code Fix Workflow
@@ -15,7 +15,8 @@ description: Fix issues identified by code-audit or other issue reports. Use whe
 
 1. **定位或创建 issue**
    - 用户指定 issue 编号时，在 `{WORKFLOW_DIR}/issues/` 目录下查找指定 issue
-   - 用户未指定 issue 但描述了缺陷现象时，按 `_shared/templates/issue.md` 创建 `source: manual` 的 issue，再继续本流程
+   - 用户未指定 issue 但描述了缺陷现象、粘贴报错日志、traceback、stack trace、启动失败或测试失败时，按 `_shared/templates/issue.md` 创建 `source: manual` 的 issue，再继续本流程
+   - manual issue 文件必须命名为 `{WORKFLOW_DIR}/issues/issue-<NNN>-<title>.md`
    - 创建 manual issue 前重新扫描 `{WORKFLOW_DIR}/issues/`，如编号已存在，递增到下一个可用编号
    - 用户只需要提供观察到的现象；原因、代码位置、分类和影响范围由 Agent 调研后补全
    - 初始 `severity`、`category`、`locations` 由 Agent 根据现象和初步调研填写；定位不明确时 `locations` 可先写 `project-wide`

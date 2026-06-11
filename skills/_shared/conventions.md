@@ -81,7 +81,7 @@ fixed_by:
 
 | 文档类型 | 命名规则 | 示例 |
 |---------|---------|------|
-| 需求 | `req-<name>.md` | `req-video-quality.md` |
+| 需求 | `req-<NNN>-<name>.md` | `req-001-video-quality.md` |
 | 功能设计 | `des-feature-<name>.md` | `des-feature-video-quality.md` |
 | 修复设计 | `des-fix-<issue-id>-<title>.md` | `des-fix-issue-001-empty-catch.md` |
 | Issue | `issue-<NNN>-<title>.md` | `issue-001-empty-catch.md` |
@@ -89,13 +89,15 @@ fixed_by:
 命名规则：
 - `<name>`: 功能名称，英文短横线命名（kebab-case）
 - `<issue-id>`: Issue 编号，如 `issue-001`
-- `<NNN>`: 三位数字编号，从 001 开始，全局递增
+- `<NNN>`: 三位数字编号，从 001 开始递增
 - `<title>`: 问题简述的 slug 形式
 
 补充规则：
+- 需求编号在 `{WORKFLOW_DIR}/requirements/` 内递增；创建需求前必须重新扫描该目录，取下一个可用三位编号。
 - Issue 编号全局递增，不区分来源。来源通过 frontmatter 的 `source` 字段标识。
 - 创建 issue 前必须重新扫描 `{WORKFLOW_DIR}/issues/`，如目标编号已存在，递增到下一个可用编号。
-- 需求和功能设计文档以 frontmatter `name` 为关联标识；缺少 `name` 时，从文件名 `req-<name>.md` 或 `des-feature-<name>.md` 解析并补齐。
+- 需求文档必须在 frontmatter 写入 `id: req-<NNN>` 和 `name: <name>`；缺少时，从文件名 `req-<NNN>-<name>.md` 解析并补齐。
+- 功能设计文档以 frontmatter `name` 为关联标识；缺少 `name` 时，从文件名 `des-feature-<name>.md` 解析并补齐。
 - 修复设计文档以 issue 文件名中的 `issue-<NNN>` 为关联标识，并由 issue frontmatter 的 `fixed_by` 反向指向。
 - 设计文档必须按 `_shared/templates/design.md` 创建；功能设计使用 `type: feature`，修复设计使用 `type: fix`。
 
@@ -132,10 +134,12 @@ fixed_by:
 
 当用户直接报告缺陷但未指定 issue：
 1. 用户只需要提供观察到的现象，不需要先给出原因、代码位置或问题分类
-2. Agent 根据现象按 `_shared/templates/issue.md` 创建 issue，`source: manual`
-3. `title`、初始 `severity`、初始 `category`、`locations` 由 Agent 根据现象和初步调研填写；定位不明确时 `locations` 可先写 `project-wide`
-4. Agent 继续 `code-fix` 流程，通过代码调研、日志/测试/复现来补全根因、影响范围、准确位置和修复方案
-5. 只有缺少复现所需的关键输入（如用户账号、具体文件、无法推断的操作步骤）时，才向用户提最少必要问题
+2. 报错日志、traceback、stack trace、启动失败、运行时异常、导入错误、测试失败和回归都属于缺陷报告，不属于 feature-flow 需求
+3. Agent 根据现象按 `_shared/templates/issue.md` 创建 issue，`source: manual`
+4. issue 文件必须命名为 `{WORKFLOW_DIR}/issues/issue-<NNN>-<title>.md`；创建前重新扫描 `{WORKFLOW_DIR}/issues/`，取下一个可用三位编号
+5. `title`、初始 `severity`、初始 `category`、`locations` 由 Agent 根据现象和初步调研填写；定位不明确时 `locations` 可先写 `project-wide`
+6. Agent 继续 `code-fix` 流程，通过代码调研、日志/测试/复现来补全根因、影响范围、准确位置和修复方案
+7. 只有缺少复现所需的关键输入（如用户账号、具体文件、无法推断的操作步骤）时，才向用户提最少必要问题
 
 ### feature-flow 发现 bug
 

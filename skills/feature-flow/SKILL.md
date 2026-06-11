@@ -1,6 +1,6 @@
 ---
 name: feature-flow
-description: Full feature lifecycle from requirements to merged code — requirements gathering, design, implementation, review, testing, and wrap-up. Use when implementing new features.
+description: Full feature lifecycle for planned new features — requirements gathering, design, implementation, review, testing, and wrap-up. Use when the user asks to add or implement a new capability with acceptance criteria. Do not use for bug reports, crash logs, stack traces, failed tests, runtime errors, import errors, regressions, or startup failures; those belong to code-fix.
 ---
 
 # Feature Flow Workflow
@@ -11,6 +11,15 @@ description: Full feature lifecycle from requirements to merged code — require
 
 ## 工作流程
 
+### 触发边界
+
+仅当用户要求新增或实现功能时使用本流程。以下输入不得触发本流程：
+- 报错日志、traceback、stack trace
+- 启动失败、运行时异常、导入错误、测试失败
+- 回归、线上缺陷、"刚才这样报错"、"这里坏了" 等 bug 报告
+
+这类输入应交给 `code-fix`：先按 `_shared/templates/issue.md` 创建 `source: manual` 的 issue，再进入修复流程。
+
 ### Step 0: 需求获取
 
 | 场景 | 行为 |
@@ -19,10 +28,13 @@ description: Full feature lifecycle from requirements to merged code — require
 | 用户口头描述需求 | 按 `_shared/templates/requirements.md` 格式创建需求文档，向用户复述确认 |
 
 **创建需求文档时：**
+- 创建前重新扫描 `{WORKFLOW_DIR}/requirements/`，取下一个可用三位编号
+- 文件必须命名为 `{WORKFLOW_DIR}/requirements/req-<NNN>-<name>.md`
+- frontmatter 必须写入 `id: req-<NNN>` 和 `name: <name>`
 - `<name>` 用英文短横线命名（kebab-case）
 - 此 name 将作为后续文档的关联标识
 - 验收标准必须可验证（能判断是否完成）
-- 已有需求文档以 frontmatter `name` 为准；缺少 `name` 时，从文件名 `req-<name>.md` 解析并补齐
+- 已有需求文档以 frontmatter `id` 和 `name` 为准；缺少时，从文件名 `req-<NNN>-<name>.md` 解析并补齐
 
 ---
 
@@ -60,7 +72,7 @@ description: Full feature lifecycle from requirements to merged code — require
 type: feature
 name: <name>
 status: proposed
-related_requirement: requirements/req-<name>.md
+related_requirement: requirements/req-<NNN>-<name>.md
 related_issue:
 ---
 ```
@@ -258,7 +270,7 @@ related_issue:
 
 | 文档类型 | 命名规则 | 示例 |
 |---------|---------|------|
-| 需求 | `{WORKFLOW_DIR}/requirements/req-<name>.md` | `req-video-quality.md` |
+| 需求 | `{WORKFLOW_DIR}/requirements/req-<NNN>-<name>.md` | `req-001-video-quality.md` |
 | 功能设计 | `{WORKFLOW_DIR}/designs/des-feature-<name>.md` | `des-feature-video-quality.md` |
 | 修复设计 | `{WORKFLOW_DIR}/designs/des-fix-<issue-id>-<title>.md` | `des-fix-issue-001-player-crash.md` |
 | Issue | `{WORKFLOW_DIR}/issues/issue-<NNN>-<title>.md` | `issue-001-player-crash.md` |

@@ -1,4 +1,5 @@
 ---
+id: req-<NNN>
 name: <功能名称>
 status: draft
 created: <YYYY-MM-DD>
