@@ -10,7 +10,7 @@
 |-------|------|
 | `code-audit` | 只读审查代码质量、架构、安全隐患和约定问题 |
 | `code-fix` | 基于 issue 的修复流程，从定位问题到验证结果 |
-| `feature-flow` | 需求、设计、实现、审查、测试和收尾的完整功能交付流程 |
+| `code-build` | 需求、设计、实现、验证和收尾的完整功能交付流程 |
 
 ## 项目结构
 
@@ -26,7 +26,7 @@ skills/
     SKILL.md
   code-fix/
     SKILL.md
-  feature-flow/
+  code-build/
     SKILL.md
 
 .codex-plugin/

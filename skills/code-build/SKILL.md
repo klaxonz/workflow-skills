@@ -1,9 +1,9 @@
 ---
-name: feature-flow
-description: Full lifecycle for planned new features — requirements, design, implementation, verification. Use when the user asks to add a new capability, feature, or module. Do NOT use for bugs, crashes, or regressions (those go to code-fix).
+name: code-build
+description: Full lifecycle for planned new features — requirements, design, implementation, verification. Use when adding a new capability, feature, or module. Do NOT use for bugs, crashes, or regressions (those go to code-fix).
 ---
 
-# Feature Flow
+# Code Build
 
 需求 → 设计 → 实现 → 验证 → 收尾。
 
@@ -45,7 +45,7 @@ description: Full lifecycle for planned new features — requirements, design, i
 ### 收尾
 按 `_shared` 约定更新需求文档和设计文档状态。输出改动汇总（文件数、增删行数、验证结果、验收标准通过率）。
 
-开发中发现的预存在 bug → 创建 `source: feature-flow` issue，在报告中列出，不在当前流程修复。问用户下一步：提交代码 / 其他需求。
+开发中发现的预存在 bug → 创建 `source: code-build` issue，在报告中列出，不在当前流程修复。问用户下一步：提交代码 / 其他需求。
 
 ## 约束
 

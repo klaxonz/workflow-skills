@@ -5,7 +5,7 @@ severity: critical | high | medium | low
 category: architecture | security | compliance | error-handling | dead-code | test-quality | naming | reliability | maintainability | performance
 locations:
   - <文件路径:行号>
-source: audit | feature-flow | code-fix | manual
+source: audit | code-build | code-fix | manual
 fixed_by:
 ---
 
