@@ -1,6 +1,6 @@
 ---
 name: code-build
-description: Full lifecycle for planned new features — requirements, design, implementation, verification. Use when adding a new capability, feature, or module. Do NOT use for bugs, crashes, or regressions (those go to code-fix).
+description: Full lifecycle for new work — features, modules, tests, documentation. Use when adding new capability or filling a gap in an existing codebase. Do NOT use for bugs, crashes, or regressions (those go to code-fix).
 ---
 
 # Code Build
@@ -9,7 +9,10 @@ description: Full lifecycle for planned new features — requirements, design, i
 
 ## 触发边界
 
-触发：用户要求新增功能/模块，可提取验收标准。
+触发：用户要求新增功能/模块，可提取验收标准。也覆盖：
+- 补写测试
+- 补写文档
+- 新增工具函数/组件/API
 
 不触发（交给 code-fix）：报错、traceback、启动失败、测试失败、回归、"这里坏了"。模糊时判断主意图，无法判定问用户。
 

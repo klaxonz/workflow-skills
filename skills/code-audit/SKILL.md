@@ -1,11 +1,18 @@
 ---
 name: code-audit
-description: Analyze code for problems — bugs, design flaws, security risks, maintainability issues. Read-only. Use when asked to audit, review, or scan code.
+description: Read-only analysis — bugs, design flaws, security risks, maintainability issues. Use for code audit, PR review, code review, logic explanation, or scanning a codebase for problems.
 ---
 
 # Code Audit
 
 审查代码，发现问题。只读，不修改。
+
+## 触发
+
+- 审计仓库、目录、模块
+- Review PR / 代码变更
+- 审查指定的代码片段
+- "解释这段逻辑" / "这段代码有什么问题"
 
 ## 审查方法
 

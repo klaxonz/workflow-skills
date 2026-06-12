@@ -1,6 +1,6 @@
 ---
 name: code-fix
-description: Fix issues from audit or user reports — bugs, crashes, regressions, runtime errors. Use when the user reports a defect, pastes an error log, or asks to fix a specific issue.
+description: Fix defects, refactor, clean up tech debt. Use for bugs, crashes, regressions, runtime errors, refactoring, performance fixes, dependency upgrades — anything broken or worth improving in existing code.
 ---
 
 # Code Fix
@@ -10,8 +10,10 @@ description: Fix issues from audit or user reports — bugs, crashes, regression
 ## 触发
 
 - 用户指定 issue 编号
-- 用户报告缺陷（报错日志、traceback、异常行为）
-- 用户说"这里坏了"
+- 用户报告缺陷（报错日志、traceback、异常行为、"这里坏了"）
+- 重构已有代码（结构优化、消除重复、改善设计）
+- 技术债清理（依赖升级、废弃 API 迁移、类型补全）
+- "这段代码为什么这么慢"（性能诊断 + 修复）
 
 用户报告但没有 issue 时，先按 `_shared` 约定创建 `source: manual` issue。
 
