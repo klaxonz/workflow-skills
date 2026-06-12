@@ -21,6 +21,8 @@ description: Full lifecycle for planned new features — requirements, design, i
 
 ## 流程
 
+遵循 `_shared/conventions.md` 的约定。
+
 ### Step 0: 获取需求
 
 | 场景 | 行为 |
@@ -65,7 +67,7 @@ description: Full lifecycle for planned new features — requirements, design, i
 
 | 检查 | 命令 | 无此工具 |
 |------|------|----------|
-| Lint | `npx eslint` / `flake8` | 跳过 |
+| Lint | `npx eslint` / `flake8` / `cargo clippy` / `golangci-lint` | 跳过 |
 | 类型检查 | `npx tsc --noEmit` / `mypy` | 跳过 |
 | 测试 | 运行涉及模块的测试 | 跳过 |
 

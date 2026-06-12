@@ -1,6 +1,6 @@
 ---
 type: fix | feature
-name: <issue-编号或功能名称>
+name: <issue-slug 或需求 name>
 status: proposed
 related_requirement:
 related_issue:

@@ -20,7 +20,7 @@ description: Analyze code for design and quality issues — code smells, archite
 | **范围** | 指定目录/模块 或 全项目 | 用户指定 |
 | **关注点** | `all`（全量）/ `security`（仅安全+合规） | `all` |
 
-> `security` 模式只扫描：红线合规 + 硬编码密钥 + 注入漏洞 + 路径遍历 + 资源泄漏。适合 CI 或快速安全检查。
+> `security` 模式只扫描：红线合规 + 硬编码密钥 + 命令注入 + SQL 注入 + 路径遍历 + 资源泄漏。适合 CI 或快速安全检查。
 
 ---
 
@@ -86,7 +86,7 @@ description: Analyze code for design and quality issues — code smells, archite
 
 - 同类问题合并（如多个文件的空 catch 块 → 一个 issue）
 - 按 `_shared/conventions.md` 中的严重度定义分配 severity
-- 检查已有 issue（`open`、`in_progress`、`blocked`），避免重复创建
+- 扫描 `{WORKFLOW_DIR}/issues/`，检查已有 issue（`open`、`in_progress`、`blocked`），避免重复创建
 
 ---
 
@@ -112,7 +112,7 @@ description: Analyze code for design and quality issues — code smells, archite
 
 ### Step 5: 创建 issue
 
-按 `_shared/templates/issue.md` 格式，`source: audit`。文件命名 `issue-<NNN>-<slug>.md`。
+按 `_shared/templates/issue.md` 格式，`source: audit`。文件命名 `issue-<NNN>-<slug>.md`，写入 `{WORKFLOW_DIR}/issues/`。
 
 ---
 

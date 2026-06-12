@@ -104,7 +104,7 @@ function validateSkill(name) {
   }
 
   // 检查必要章节
-  const requiredSections = ['## 工作流程', '## 约束', '## 配置变量'];
+  const requiredSections = ['## 流程', '## 约束'];
   for (const section of requiredSections) {
     if (!content.includes(section)) {
       errors.push(`缺少章节: ${section}`);

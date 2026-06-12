@@ -83,12 +83,10 @@ fixed_by:
 | Issue | `issue-<NNN>-<slug>.md` | `issue-001-empty-catch.md` |
 
 - `<NNN>`: 三位数字，**全局递增**（issues / designs / requirements 各独立计数）。创建前扫描对应目录取下一个可用编号。
-- `<name>`: kebab-case 英文。设计文档的 `<name>` **必须** 与关联对象的标识一致：修复设计 = issue 文件名的 `<slug>`，功能设计 = 需求文档 frontmatter 的 `name`。
+- `<name>`: kebab-case 英文。设计文档的 `<name>` **必须** 与关联对象的标识一致（修复设计 = issue 文件名的 `<slug>`，功能设计 = 需求文档 frontmatter 的 `name`），同时作为设计文档自身 frontmatter 的 `name` 值。
 - `<slug>`: 全小写，空格→连字符，中文→英文，≤60 字符，首尾无连字符。
 
-**`fixed_by` 格式**: `designs/design-<NNN>-<name>.md`（相对于 `{WORKFLOW_DIR}` 的路径）。
-
-**设计文档通过 frontmatter 的 `related_issue` 或 `related_requirement` 反向关联，不依赖文件名解析。**
+**`fixed_by` 格式**: `designs/design-<NNN>-<name>.md`（相对于 `{WORKFLOW_DIR}` 的路径）。正向引用依赖路径约定；反向关联通过 frontmatter 的 `related_issue` / `related_requirement` 字段，不解析文件名。
 
 ---
 

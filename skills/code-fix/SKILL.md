@@ -11,6 +11,8 @@ description: Fix issues identified by audit or reported by user. Use when the us
 
 ## 流程
 
+遵循 `_shared/conventions.md` 的约定。
+
 ### Step 0: 定位 issue
 
 - 用户指定编号 → 读取 `{WORKFLOW_DIR}/issues/issue-<NNN>-*.md`
@@ -59,7 +61,7 @@ description: Fix issues identified by audit or reported by user. Use when the us
 
 | 检查 | 命令 | 无此工具 |
 |------|------|----------|
-| Lint | `npx eslint` / `flake8` / `cargo clippy` | 跳过 |
+| Lint | `npx eslint` / `flake8` / `cargo clippy` / `golangci-lint` | 跳过 |
 | 类型检查 | `npx tsc --noEmit` / `mypy` | 跳过 |
 | 测试 | 运行涉及文件的测试 | 跳过 |
 
