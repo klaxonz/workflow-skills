@@ -1,6 +1,6 @@
 ---
 name: code-audit
-description: Read-only analysis — bugs, design flaws, security risks, maintainability issues. Use for code audit, PR review, code review, logic explanation. Quick questions skip the issue lifecycle.
+description: Read-only analysis — defects, design flaws, security risks, readability, maintainability. Use for code audit, PR review, code review, logic explanation. Quick questions skip the issue lifecycle.
 ---
 
 # Code Audit
@@ -18,14 +18,29 @@ description: Read-only analysis — bugs, design flaws, security risks, maintain
 
 所有审查都遵循：**阅读 → 思考 → 回答。**
 
-逐文件阅读代码，理解意图、数据流、边界条件。每读一个文件问自己：
+逐文件阅读代码，理解意图、数据流、边界条件。
 
-- 这段代码可能以什么方式出错？（空值、越界、并发、异常路径）
-- 下一个维护者能看懂吗？（命名、结构、重复、死代码）
-- 外部输入触达危险操作了吗？（exec、文件读写、SQL、反序列化）
-- 用对了项目的基础设施吗？（分层、错误类型、已有工具函数）
+### 它会不会出错
 
-不要被检查项限制——发现任何值得关注的问题都应记录。安全、错误处理、架构、可维护性、测试质量、性能都是合理方向。自动化搜索（rg）作为辅助，你的判断才是核心。
+- 空值、越界、并发竞争、异常路径被吞
+- 外部输入触达危险操作（exec、文件读写、SQL、反序列化）
+
+### 它好不好读
+
+- 函数/变量名看一眼就知道存的什么、做什么吗——还是 `data`、`result`、`process`？
+- 一个函数做了一件事还是三件事——读到一半需要切换心智模型？
+- 抽象层级一致吗——同一行里混着"发送验证码"和 `res.status(200)`？
+- 写法符合语言习惯吗——Python 写成 Java、React 写成 jQuery 范式？
+- 简单逻辑占了多少行——10 行能说清的事写了 50 行？
+
+### 它好不好改
+
+- 改了这里，需要同时改多少个其他地方？
+- 加一个新场景是插一行代码还是重构三个文件？
+- 有测试吗——改了之后怎么知道没改坏？
+- 用对了项目的基础设施吗——已有工具函数没用，自己另写了一套？
+
+**好的代码不只看有没有 bug——更看读起来是否顺畅、改起来是否安全。** 以上三个维度同等重要。自动化搜索（rg）辅助缺陷发现，但品味评价只能靠阅读和判断。
 
 ## 输出
 
