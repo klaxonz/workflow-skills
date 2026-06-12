@@ -58,6 +58,8 @@ fixed_by:
 
 无法判定时选择较低严重度，在 issue 正文中注明判断依据。
 
+代码品味问题（命名、可读性、结构复杂度）通常为 `low` 或 `medium`，除非该问题直接导致 bug（→ `high`）或安全风险（→ `critical`）。区分原则：**会导致线上故障吗？** 会 → high 以上；不会但增加维护成本 → low/medium。
+
 ### 类别定义 & 边界
 
 | 类别 | 说明 | 判定 |
@@ -110,27 +112,20 @@ fixed_by:
 
 ---
 
----
-
 ## 代码探索
 
 面对不熟悉的代码时避免逐文件从头读到尾。按以下顺序高效建立心智模型：
 
-1. **元数据** — 先读 `package.json` / `Cargo.toml` / `Makefile` / `.gitignore`，了解项目类型、依赖、构建方式
-2. **结构** — Glob 顶级目录和关键子目录，建立文件分布图
-3. **签名** — Grep 关键模式定位核心模块：exports、函数定义、路由注册、类声明
-4. **精准读取** — 只读上面步骤选出的文件，而不是整个目录
+0. **语言/框架** — 读 `package.json` / `Cargo.toml` / `go.mod` / `requirements.txt` / `Gemfile`，确定语言、框架、主要依赖。这一步决定后续 Grep 用什么语法。
+1. **结构** — Glob 顶级目录和关键子目录，建立文件分布图
+2. **签名** — Grep 语言特定的关键模式定位核心模块：
+   - JS/TS: `export (class|function|const)`、`@(Get|Post)\("`
+   - Python: `^def \w+`、`^class \w+`
+   - Go: `^func \w+`、`^type \w+ struct`
+   - Rust: `^pub fn \w+`、`^pub struct \w+`
+3. **精准读取** — 只读上面步骤选出的文件，而不是整个目录
 
-探索时优先使用 Grep/Glob 定位代码，而非打开文件从头通读。多个可并行的探索分支用子 agent 同时执行。
-
-### 探索示例
-
-```
-"找到所有的 API 路由定义"
-→ grep '@(Get|Post|Put|Delete|Patch)\(' → 定位到 routes/
-→ read routes/ 下的文件列表 → 挑选核心路由文件读取
-→ 不是 grep routes/ 然后读全部文件
-```
+探索时优先使用 Grep/Glob 定位代码，而非打开文件从头通读。如果平台支持并行工具调用，多个探索分支同时进行。
 
 ---
 
