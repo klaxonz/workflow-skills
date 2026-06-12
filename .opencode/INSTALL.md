@@ -19,5 +19,6 @@ Use OpenCode's skill listing command to confirm these skills are available:
 - `code-audit`
 - `code-fix`
 - `code-build`
+- `code-ship`
 
 Install Workflow Skills separately for each agent you use.

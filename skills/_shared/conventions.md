@@ -30,7 +30,7 @@ severity: critical | high | medium | low
 category: architecture | security | compliance | error-handling | dead-code | test-quality | naming | reliability | maintainability | performance
 locations:
   - <文件路径:行号>
-source: audit | code-build | code-fix | manual
+source: audit | code-build | code-fix | code-ship | manual
 fixed_by:
 ---
 ```
@@ -159,7 +159,7 @@ draft → cancelled
 
 - Issue `→` 设计文档：通过 issue 的 `fixed_by` 字段指向 `designs/design-<NNN>-<name>.md`
 - 设计 `→` Issue/需求：通过 frontmatter 的 `related_issue` / `related_requirement` 反向指定
-- Issue `source` 字段标记发现来源：`audit` / `manual` / `code-fix` / `code-build`
+- Issue `source` 字段标记发现来源：`audit` / `manual` / `code-fix` / `code-build` / `code-ship`
 
 ---
 
@@ -171,3 +171,4 @@ draft → cancelled
 | user → fix | 用户报告缺陷（报错日志/traceback 等），code-fix 先创建 `source: manual` issue 再修复 |
 | code-build 发现 bug | 创建 issue（`source: code-build`），在报告中列出，不中断当前功能流程 |
 | fix 发现新问题 | 创建新 issue（`source: code-fix`），继续当前修复，完成后报告 |
+| code-ship 发现遗漏 | Pre-commit review 指出遗漏，创建 issue（`source: code-ship`），不阻塞交付 |

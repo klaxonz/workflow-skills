@@ -1,7 +1,7 @@
 {
   "name": "workflow-skills",
   "version": "1.0.0",
-  "description": "Project development workflow skills for code audit, issue fixes, and feature delivery.",
+  "description": "Project development workflow skills for code audit, issue fixes, feature delivery, and code shipping.",
   "author": {
     "name": "klaxonz"
   },
@@ -11,23 +11,25 @@
   "keywords": [
     "agent-skills",
     "code-audit",
+    "code-ship",
     "workflow",
     "codex"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Workflow Skills",
-    "shortDescription": "Code audit, fix, and feature delivery workflows for coding agents",
-    "longDescription": "Use Workflow Skills to guide code audits, issue-driven fixes, and feature delivery with requirements, design, implementation, review, testing, and wrap-up workflows.",
+    "shortDescription": "Code audit, fix, feature delivery, and ship workflows",
+    "longDescription": "Use Workflow Skills to guide code audits, issue-driven fixes, feature delivery, and shipping with commit messages, PR summaries, and release notes.",
     "developerName": "klaxonz",
     "category": "Coding",
     "capabilities": [
       "Code audits",
       "Issue fixes",
-      "Feature delivery workflows"
+      "Feature delivery",
+      "Code shipping"
     ],
     "defaultPrompt": [
-      "Use Workflow Skills when auditing code, fixing tracked issues, or implementing features."
+      "Use Workflow Skills when auditing code, fixing issues, implementing features, or preparing to ship."
     ]
   }
 }

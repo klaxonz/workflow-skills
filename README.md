@@ -1,6 +1,6 @@
 # Workflow Skills
 
-面向 AI 编程 Agent 的项目开发工作流技能包，覆盖代码审查、问题修复和功能交付。
+面向 AI 编程 Agent 的项目开发工作流技能包，覆盖代码审查、问题修复、功能构建和代码交付。
 
 技能库本身保持 Agent 无关；不同平台的插件入口放在共享的 `skills/` 目录旁边。
 
@@ -11,6 +11,7 @@
 | `code-audit` | 只读——bug、安全、可读性、可维护性。小问题直接答，大扫管道 issue |
 | `code-fix` | 修复——bug、重构、技术债、性能。小改动直接修，多模块走流程 |
 | `code-build` | 构建——功能、模块、测试、文档。小任务直接做，大功能走流程 |
+| `code-ship` | 交付——commit message、PR 摘要、release notes、pre-commit review |
 
 ## 项目结构
 
@@ -27,6 +28,8 @@ skills/
   code-fix/
     SKILL.md
   code-build/
+    SKILL.md
+  code-ship/
     SKILL.md
 
 .codex-plugin/
