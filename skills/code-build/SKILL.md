@@ -1,11 +1,13 @@
 ---
 name: code-build
-description: Full lifecycle for new work — features, modules, tests, documentation. Use when adding new capability or filling a gap in an existing codebase. Do NOT use for bugs, crashes, or regressions (those go to code-fix).
+description: Build new work — features, modules, tests, documentation. Small tasks skip the requirement/design lifecycle; multi-module features use the full flow.
 ---
 
 # Code Build
 
 需求 → 设计 → 实现 → 验证 → 收尾。
+
+**小任务直接做，不走完整流程。** 加一个工具函数、补几个测试用例、写一段文档——直接做完验证收工。多模块联动、需要需求/设计文档对齐、跨会话追踪时才走下面的完整生命周期。
 
 ## 触发边界
 

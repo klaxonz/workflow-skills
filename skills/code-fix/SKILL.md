@@ -1,11 +1,13 @@
 ---
 name: code-fix
-description: Fix defects, refactor, clean up tech debt. Use for bugs, crashes, regressions, runtime errors, refactoring, performance fixes, dependency upgrades — anything broken or worth improving in existing code.
+description: Fix, refactor, clean up. Use for bugs, crashes, regressions, runtime errors, refactoring, performance fixes. Small changes skip the design/verify lifecycle; complex multi-module fixes use it.
 ---
 
 # Code Fix
 
 从问题到修复。
+
+**小改动直接修，不走完整流程。** 修一个 typo、加一行日志、删一个死变量——直接做完收工。需要多轮设计确认、跨模块改动、跨会话追踪时才走下面的设计→验证→收尾流程。
 
 ## 触发
 
