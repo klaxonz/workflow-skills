@@ -1,6 +1,6 @@
 ---
 name: code-build
-description: Build new work — features, modules, tests, documentation. Small tasks are done in one shot; multi-module features use the full requirement-design-track flow.
+description: Build new code from scratch. ALWAYS use when user says 新增/添加/做一个/写一个/实现/补测试/补文档/加个功能/加个接口/新建. Features, modules, tests, docs. Do NOT use for bugs or fixes (→ code-fix).
 ---
 
 # Code Build
@@ -24,7 +24,7 @@ description: Build new work — features, modules, tests, documentation. Small t
 用户口头描述时，用 1-2 句话复述确认理解。提取验收标准：做完后应该能验证什么。
 
 ### 实现
-**先读再写。** 读目标文件和它的上下文——代码风格、命名习惯、已有的抽象和工具函数。新代码应该融入现有代码，而非自成一体。改前确认不在红线列表。每次改后自查是否与需求一致。
+**按 `_shared` 约定的探索方法理解上下文再写。** 读目标文件和它的上下文——代码风格、命名习惯、已有的抽象和工具函数。新代码应该融入现有代码，而非自成一体。改前确认不在红线列表。每次改后自查是否与需求一致。
 
 ### 验证
 按项目实际工具执行 lint、类型检查、涉及模块的测试。无对应工具则跳过。**新增代码没有覆盖的路径补测试。**

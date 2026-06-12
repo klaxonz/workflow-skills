@@ -1,6 +1,6 @@
 ---
 name: code-ship
-description: Prepare code for shipping — commit messages, PR summaries, release notes, changelogs. Read git history and diffs to generate structured, human-readable output. Small tasks are done in one shot.
+description: Prepare code for release. ALWAYS use when user says commit message/写提交/pr 描述/PR summary/release notes/changelog/发版/提交前检查/帮我提交/改了什么/总结变更. Generates structured git output from diffs and history.
 ---
 
 # Code Ship
@@ -22,7 +22,7 @@ description: Prepare code for shipping — commit messages, PR summaries, releas
 所有交付都遵循：**读变更 → 理解意图 → 生成文本。**
 
 ### 读变更
-先获取变更内容——`git diff`（未提交）、`git diff main...HEAD`（分支）、`git log`（历史）。确认变更范围和边界。
+先获取变更内容——`git diff`（未提交）、`git diff main...HEAD`（分支）、`git log`（历史）。确认变更范围和边界。**按 `_shared` 约定的探索方法快速理解变更涉及的文件上下文。**
 
 ### 理解意图
 不是翻译 diff——是理解开发者做了什么、为什么做。从文件名、函数签名变化、注释、issue 引用中提取意图。一个变更可能包含多个逻辑块，分开理解。

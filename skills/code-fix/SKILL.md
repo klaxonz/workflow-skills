@@ -1,6 +1,6 @@
 ---
 name: code-fix
-description: Fix, refactor, clean up. Bugs, crashes, regressions, tech debt, performance. Small changes are done in one shot; complex multi-module fixes use the full design-and-track flow.
+description: Fix and improve existing code. ALWAYS use when user says 修复/修一下/改一下/fix/修 bug/这坏了/报错/traceback/重构/优化/太慢了/升级/迁移/清理技术债. Handles bugs, refactoring, performance, dependencies.
 ---
 
 # Code Fix
@@ -22,7 +22,7 @@ description: Fix, refactor, clean up. Bugs, crashes, regressions, tech debt, per
 所有修复都遵循：**理解 → 修复 → 验证。**
 
 ### 理解
-**先读再改。** 读问题相关代码和它的上下文——谁调它、它调谁、数据怎么流。理解周围的代码风格、命名习惯、抽象模式。从现象反推根因，跟踪代码路径确认，不要猜。
+**按 `_shared` 约定的探索方法高效定位，不逐文件通读。** 读问题相关代码和它的上下文——谁调它、它调谁、数据怎么流。理解周围的代码风格、命名习惯、抽象模式。从现象反推根因，跟踪代码路径确认，不要猜。
 
 ### 修复
 把问题修好，不只是修症状。根部需要重构结构、拆分模块、改善设计——那就做。改前确认不在红线列表。每次改后自查：修的是根因吗、改后与周围代码一致吗、是否触及无关代码。

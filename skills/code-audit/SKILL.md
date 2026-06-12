@@ -1,6 +1,6 @@
 ---
 name: code-audit
-description: Read-only analysis — defects, design flaws, security risks, readability, maintainability. Use for code audit, PR review, code review, logic explanation. Quick questions skip the issue lifecycle.
+description: Read-only code analysis. ALWAYS use when user says 审计/审查/review/帮我看看/有什么问题/扫一遍/解释这段/这段什么意思/分析一下/检查一下/看下代码. Finds bugs, design flaws, security risks, readability issues.
 ---
 
 # Code Audit
@@ -21,7 +21,7 @@ description: Read-only analysis — defects, design flaws, security risks, reada
 
 ## 审查方法
 
-逐文件阅读代码，理解意图、数据流、边界条件。从三个维度评估：
+**按 `_shared` 约定的探索方法高效定位关键代码，不逐目录通读。** 然后对选出的文件从三个维度评估：
 
 ### 它会不会出错
 

@@ -27,6 +27,7 @@ description: Cross-skill conventions — not a skill itself; referenced by other
 title: <问题简述>
 status: open | in_progress | fixed | wontfix | duplicate | blocked
 severity: critical | high | medium | low
+confidence: <0-100>
 category: architecture | security | compliance | error-handling | dead-code | test-quality | naming | reliability | maintainability | performance
 locations:
   - <文件路径:行号>
@@ -106,6 +107,30 @@ fixed_by:
 默认 `.workflow`（相对于项目根）。可通过环境变量 `WORKFLOW_DIR` 覆盖。
 
 缺少 `{WORKFLOW_DIR}/issues/`、`{WORKFLOW_DIR}/designs/`、`{WORKFLOW_DIR}/requirements/` 时按需创建。
+
+---
+
+---
+
+## 代码探索
+
+面对不熟悉的代码时避免逐文件从头读到尾。按以下顺序高效建立心智模型：
+
+1. **元数据** — 先读 `package.json` / `Cargo.toml` / `Makefile` / `.gitignore`，了解项目类型、依赖、构建方式
+2. **结构** — Glob 顶级目录和关键子目录，建立文件分布图
+3. **签名** — Grep 关键模式定位核心模块：exports、函数定义、路由注册、类声明
+4. **精准读取** — 只读上面步骤选出的文件，而不是整个目录
+
+探索时优先使用 Grep/Glob 定位代码，而非打开文件从头通读。多个可并行的探索分支用子 agent 同时执行。
+
+### 探索示例
+
+```
+"找到所有的 API 路由定义"
+→ grep '@(Get|Post|Put|Delete|Patch)\(' → 定位到 routes/
+→ read routes/ 下的文件列表 → 挑选核心路由文件读取
+→ 不是 grep routes/ 然后读全部文件
+```
 
 ---
 
