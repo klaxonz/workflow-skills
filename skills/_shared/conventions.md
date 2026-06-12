@@ -109,6 +109,54 @@ fixed_by:
 
 ---
 
+## 文档操作
+
+### 模板
+
+所有文档使用 `_shared/templates/` 下的模板创建：
+- Issue → `templates/issue.md`
+- 需求 → `templates/requirements.md`
+- 设计 → `templates/design.md`
+
+### 创建步骤
+
+创建任何文档时的统一步骤：
+1. 扫描 `{WORKFLOW_DIR}/<type>/` 取下一个可用 `<NNN>`
+2. 按命名约定确定文件名（`<prefix>-<NNN>-<name>.md`）
+3. 按模板创建，填写 frontmatter 和正文
+4. 写入对应目录
+
+目录不存在时按需创建。
+
+### 状态流转
+
+**Issue:**
+```
+open → in_progress → fixed
+open → wontfix | duplicate
+in_progress → blocked
+```
+
+**设计文档:**
+```
+proposed → implemented
+proposed → cancelled
+```
+
+**需求文档:**
+```
+draft → done
+draft → cancelled
+```
+
+### 关联与引用
+
+- Issue `→` 设计文档：通过 issue 的 `fixed_by` 字段指向 `designs/design-<NNN>-<name>.md`
+- 设计 `→` Issue/需求：通过 frontmatter 的 `related_issue` / `related_requirement` 反向指定
+- Issue `source` 字段标记发现来源：`audit` / `manual` / `code-fix` / `feature-flow`
+
+---
+
 ## 技能交接
 
 | 场景 | 行为 |

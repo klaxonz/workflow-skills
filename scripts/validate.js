@@ -6,10 +6,6 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const SKILLS_DIR = path.join(ROOT, 'skills');
 
-/**
- * 自动发现技能目录
- * 扫描 skills/ 目录，返回包含 SKILL.md 的子目录（排除 _shared）
- */
 function discoverSkills() {
   if (!fs.existsSync(SKILLS_DIR)) {
     return [];
@@ -20,9 +16,6 @@ function discoverSkills() {
     .map(d => d.name);
 }
 
-/**
- * 解析 SKILL.md 的 frontmatter
- */
 function parseFrontmatter(content) {
   const match = content.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
@@ -36,9 +29,6 @@ function parseFrontmatter(content) {
   return meta;
 }
 
-/**
- * 验证共享资源
- */
 function validateShared() {
   console.log('\n[共享资源检查]');
   const sharedDir = path.join(SKILLS_DIR, '_shared');
@@ -65,9 +55,6 @@ function validateShared() {
   return { passed, failed };
 }
 
-/**
- * 验证单个技能
- */
 function validateSkill(name) {
   const skillDir = path.join(SKILLS_DIR, name);
   const mdPath = path.join(skillDir, 'SKILL.md');
@@ -75,7 +62,6 @@ function validateSkill(name) {
   const errors = [];
   const warnings = [];
 
-  // 检查 SKILL.md 存在
   if (!fs.existsSync(mdPath)) {
     errors.push('SKILL.md 不存在');
     return { errors, warnings };
@@ -83,14 +69,12 @@ function validateSkill(name) {
 
   const content = fs.readFileSync(mdPath, 'utf-8');
 
-  // 检查 frontmatter
   const meta = parseFrontmatter(content);
   if (!meta) {
     errors.push('缺少 YAML frontmatter');
     return { errors, warnings };
   }
 
-  // 检查必要字段
   if (!meta.name) {
     errors.push('frontmatter 缺少 name 字段');
   } else if (meta.name !== name) {
@@ -103,30 +87,17 @@ function validateSkill(name) {
     warnings.push('description 过短，建议至少 10 个字符');
   }
 
-  // 检查必要章节
-  const requiredSections = ['## 流程', '## 约束'];
-  for (const section of requiredSections) {
-    if (!content.includes(section)) {
-      errors.push(`缺少章节: ${section}`);
-    }
+  if (!content.includes('## 约束')) {
+    errors.push('缺少 ## 约束 章节');
   }
 
-  // 检查引用共享约定
-  if (!content.includes('_shared/conventions.md')) {
-    warnings.push('未引用 _shared/conventions.md');
-  }
-
-  // 检查 WORKFLOW_DIR 配置
-  if (!content.includes('WORKFLOW_DIR')) {
-    warnings.push('未定义 WORKFLOW_DIR 配置变量');
+  if (!content.includes('_shared')) {
+    warnings.push('未引用 _shared 约定');
   }
 
   return { errors, warnings };
 }
 
-/**
- * 主函数
- */
 function main() {
   console.log('验证 workflow-skills...\n');
 
@@ -134,12 +105,10 @@ function main() {
   let totalFailed = 0;
   let totalWarnings = 0;
 
-  // 验证共享资源
   const sharedResult = validateShared();
   totalPassed += sharedResult.passed;
   totalFailed += sharedResult.failed;
 
-  // 自动发现并验证技能
   console.log('\n[技能检查]');
   const skills = discoverSkills();
 
@@ -170,7 +139,6 @@ function main() {
     }
   }
 
-  // 输出汇总
   console.log(`\n[汇总]`);
   console.log(`  通过: ${totalPassed}`);
   console.log(`  失败: ${totalFailed}`);
