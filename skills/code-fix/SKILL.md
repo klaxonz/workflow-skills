@@ -31,7 +31,7 @@ description: Fix issues from audit or user reports — bugs, crashes, regression
 - 拿不准 → 问
 
 ### 实施
-最小变更，精准编辑。每次改后自查：是否引入新问题、是否超出方案范围。改前确认文件不在红线列表。遇阻塞 → issue `status: blocked`，在修复尝试中记录。
+把问题修好，不只是修症状。如果根治需要重构函数结构、拆分模块、改善设计——那就做。每次改后自查：修的是根因吗、改后比改前更好吗、是否触及了方案范围外的代码。改前确认不在红线列表。遇阻塞 → issue `status: blocked`，在修复尝试中记录。
 
 ### 验证
 按项目实际工具执行 lint、类型检查、涉及文件的测试。无对应工具则跳过。不自行评估"手动验证通过"——请用户在实际环境确认。
@@ -41,6 +41,6 @@ description: Fix issues from audit or user reports — bugs, crashes, regression
 
 ## 约束
 
-- 最小变更，只改需要的行
-- 不改红线文件、不顺手重构无关模块
+- 修就修好，不满足于打补丁——但范围控制在问题本身，不顺手重构无关模块
+- 不改红线文件
 - 不提交，除非用户要求
