@@ -15,7 +15,7 @@ description: Fix, refactor, clean up. Bugs, crashes, regressions, tech debt, per
 - 技术债清理（依赖升级、废弃 API 迁移、类型补全）
 - "这段为什么这么慢"（性能诊断 + 修复）
 
-用户报告但没有 issue 时，按 `_shared` 约定创建 `source: manual` issue。
+用户报告但没有 issue 时，复杂度需要追踪则按 `_shared` 约定创建，否则直接修复。
 
 ## 核心方法
 
