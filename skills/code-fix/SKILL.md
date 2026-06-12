@@ -1,13 +1,11 @@
 ---
 name: code-fix
-description: Fix, refactor, clean up. Use for bugs, crashes, regressions, runtime errors, refactoring, performance fixes. Small changes skip the design/verify lifecycle; complex multi-module fixes use it.
+description: Fix, refactor, clean up. Bugs, crashes, regressions, tech debt, performance. Small changes are done in one shot; complex multi-module fixes use the full design-and-track flow.
 ---
 
 # Code Fix
 
 从问题到修复。
-
-**小改动直接修，不走完整流程。** 修一个 typo、加一行日志、删一个死变量——直接做完收工。需要多轮设计确认、跨模块改动、跨会话追踪时才走下面的设计→验证→收尾流程。
 
 ## 触发
 
@@ -15,33 +13,45 @@ description: Fix, refactor, clean up. Use for bugs, crashes, regressions, runtim
 - 用户报告缺陷（报错日志、traceback、异常行为、"这里坏了"）
 - 重构已有代码（结构优化、消除重复、改善设计）
 - 技术债清理（依赖升级、废弃 API 迁移、类型补全）
-- "这段代码为什么这么慢"（性能诊断 + 修复）
+- "这段为什么这么慢"（性能诊断 + 修复）
 
-用户报告但没有 issue 时，先按 `_shared` 约定创建 `source: manual` issue。
+用户报告但没有 issue 时，按 `_shared` 约定创建 `source: manual` issue。
 
-## 修复方法
+## 核心方法
 
-**理解问题 → 设计方案 → 实施 → 验证 → 收尾。** 每一步都可能回到上一步。
+所有修复都遵循：**理解 → 修复 → 验证。**
 
-### 理解问题
+### 理解
 读问题相关代码，弄清楚模块职责、上下游调用关系、数据如何流动。从现象反推根因，不要猜——跟踪代码路径确认。
 
-### 设计方案
-按 `_shared` 约定创建设计文档（`type: fix`）。核心写三件事：根因是什么、怎么修、会波及哪些文件。
-
-是否等用户确认：
-- 跨模块改动、接口变化、行为兼容性变化 → **等用户确认**
-- 局部改动（死代码删除、加日志、加 import）→ 自定，在方案中记录判断
-- 拿不准 → 问
-
-### 实施
-把问题修好，不只是修症状。如果根治需要重构函数结构、拆分模块、改善设计——那就做。每次改后自查：修的是根因吗、改后比改前更好吗、是否触及了方案范围外的代码。改前确认不在红线列表。遇阻塞 → issue `status: blocked`，在修复尝试中记录。
+### 修复
+把问题修好，不只是修症状。根治需要重构函数结构、拆分模块、改善设计——那就做。改前确认不在红线列表。每次改后自查：修的是根因吗、改后比改前更好吗、是否触及无关代码。
 
 ### 验证
 按项目实际工具执行 lint、类型检查、涉及文件的测试。无对应工具则跳过。不自行评估"手动验证通过"——请用户在实际环境确认。
 
-### 收尾
-按 `_shared` 约定更新 issue 和设计文档状态。输出改动汇总（文件数、增删行数、验证结果）。修复中新发现的问题创建 `source: code-fix` issue，报告后建议后续处理。
+完成时一句话告诉用户改了什么、验证结果。
+
+## 完整流程
+
+**满足以下任一条件时，叠加完整流程：**
+- 跨模块改动（>2 个文件或 >1 个模块）
+- 接口/行为兼容性变化
+- 需要跨会话追踪
+- 用户明确要求按流程走
+
+完整流程在核心方法之上叠加三个步骤：
+
+**设计方案** — 修复前按 `_shared` 约定创建设计文档（`type: fix`），写三件事：根因、修复思路、涉及文件。等用户确认：
+- 跨模块/接口/行为变化 → **必须等确认**
+- 局部改动 → 自定，在方案中记录判断
+- 拿不准 → 问
+
+**收尾** — 修复+验证完成后，按 `_shared` 约定更新 issue 和设计文档状态。输出改动汇总。
+
+**新问题** — 修复中发现的其他问题创建 `source: code-fix` issue，报告中列出，不在当前修复中处理。
+
+实施中遇阻塞 → issue `status: blocked`，在修复尝试中记录。
 
 ## 约束
 
